@@ -40,21 +40,21 @@ void Car_System::generate()
 	{
 		for(std::size_t pos = 0; pos < config.get_street_length(); ++pos)
 		{
-			signed char speed = system[current_system][lane][pos].speed;
-
-			// determine hole to next car
-			std::size_t pos_temp = pos, timeout = 0;
-			while(system[current_system][lane][++pos_temp % config.get_street_length()].speed == -1
-				  && timeout++ < config.get_street_length())
-				;
-
-			std::size_t hole = pos_temp - pos - 1;
-
 			if(is_car_at(pos, lane))
 			{
+				std::size_t speed = system[current_system][lane][pos].speed;
+
+				// determine hole to next car
+				std::size_t pos_temp = pos, timeout = 0;
+				while(system[current_system][lane][++pos_temp % config.get_street_length()].speed == -1
+					  && timeout++ < config.get_street_length())
+					;
+
+				std::size_t hole = pos_temp - pos - 1;
+
 				if(speed < config.get_max_speed())
 					++speed;
-				if(static_cast<int>(hole) < speed)
+				if(hole < speed)
 					speed = hole;
 
 				// random slow down car is driving (speed != 0)
@@ -82,7 +82,7 @@ void Car_System::new_random()
 	// generate new cars
 	for(std::size_t lane = 0; lane < config.get_street_lanes(); ++lane)
 	{
-		for(std::size_t pos = 0; pos < config.get_street_lanes(); ++pos)
+		for(std::size_t pos = 0; pos < config.get_street_length(); ++pos)
 		{
 			std::size_t random = dist(mt);
 			if(random < config.get_car_density())

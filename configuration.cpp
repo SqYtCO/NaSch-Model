@@ -23,4 +23,5 @@ void Configuration::reset_config()
 	cell_size = Default_Values::CELL_SIZE;
 	slow_down_chance = Default_Values::SLOW_DOWN_CHANCE;
 	car_density = Default_Values::CAR_DENSITY;
+	max_speed = Default_Values::MAX_SPEED;
 }

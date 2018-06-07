@@ -10,6 +10,7 @@ namespace Default_Values
 	constexpr std::size_t CELL_SIZE = 50;
 	constexpr std::size_t SLOW_DOWN_CHANCE = 0;
 	constexpr std::size_t CAR_DENSITY = 20;
+	constexpr std::size_t MAX_SPEED = 5;
 }
 
 class Configuration
