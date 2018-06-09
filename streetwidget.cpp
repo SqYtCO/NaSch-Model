@@ -8,7 +8,7 @@ StreetWidget::StreetWidget(QWidget* parent) : QWidget(parent), car_image(":/imag
 												scale(1), move_x(0), move_y(0)
 {
 	this->setAutoFillBackground(true);
-	this->setPalette(QPalette(Qt::black));
+	this->setPalette(QPalette(Qt::blue));
 
 	car_image = car_image.scaled(config.get_cell_size(), config.get_cell_size());
 }
@@ -26,31 +26,58 @@ void StreetWidget::paintEvent(QPaintEvent* event)
 	{
 		for(std::size_t b = 0, x = move_x, y2 = 0; b < config.get_street_length(); ++b, x += config.get_cell_size())
 		{
-			if((x + config.get_cell_size()) * scale > static_cast<std::size_t>(width()))
+			if(config.get_long_street_break())
 			{
-				y1 += config.get_cell_size();
-				x = 0;
+				if((x + config.get_cell_size()) * scale > static_cast<std::size_t>(width()))
+				{
+					y1 += config.get_cell_size();
+					x = 0;
+				}
 			}
 
 			if(b == 0)
 			{
 				painter.setBrush(QBrush(Qt::lightGray, Qt::SolidPattern));
 				painter.drawRect(x, y1 + y2, config.get_cell_size(), config.get_cell_size());
-
 				painter.setBrush(QBrush(Qt::white, Qt::SolidPattern));
 			}
 			else
 				painter.drawRect(x, y1 + y2, config.get_cell_size(), config.get_cell_size());
 
+			if(cars.is_slow_down_at(b, a))
+			{
+				painter.setBrush(QBrush(Qt::gray, Qt::SolidPattern));
+				painter.drawRect(x, y1 + y2, config.get_cell_size(), config.get_cell_size());
+				painter.setBrush(QBrush(Qt::white, Qt::SolidPattern));
+			}
+
 			if(cars.is_car_at(b, a))
 			{
-				QPixmap temp(car_image.size());
-				temp.fill(car_colors[cars.get_id(b, a) % 11]);
-				temp.setMask(car_image.createMaskFromColor(Qt::transparent));
-				car_image = temp;
-				painter.drawPixmap(x, y1 + y2, car_image);
-				painter.drawText(QRectF(x + config.get_cell_size() * 0.7, y1 + y2 + config.get_cell_size() * 0.1, config.get_cell_size() * 0.2, config.get_cell_size() * 0.3), QString::number(cars.get_speed(b, a)));
+				if(config.get_show_cars())
+				{
+					QPixmap temp(car_image.size());
+					temp.fill(car_colors[cars.get_id(b, a) % 11]);
+					temp.setMask(car_image.createMaskFromColor(Qt::transparent));
+					car_image = temp;
+					painter.drawPixmap(x, y1 + y2, car_image);
+					painter.drawText(QRectF(x + config.get_cell_size() * 0.7, y1 + y2 + config.get_cell_size() * 0.1, config.get_cell_size() * 0.2, config.get_cell_size() * 0.3), QString::number(cars.get_speed(b, a)));
+				}
+				else
+				{
+					if(config.get_show_speed_color())
+						painter.setBrush(QBrush(QColor(0x20 * cars.get_speed(b, a), 0x00, 0x00), Qt::SolidPattern));
+					else
+						painter.setBrush(QBrush(car_colors[cars.get_id(b, a) % 11], Qt::SolidPattern));
 
+					painter.drawRect(x, y1 + y2, config.get_cell_size(), config.get_cell_size());
+				}
+			}
+			else if(cars.is_barrier_at(b, a))
+			{
+				painter.setBrush(QBrush(Qt::black, Qt::SolidPattern));
+				painter.drawRect(x, y1 + y2, config.get_cell_size(), config.get_cell_size());
+
+				painter.setBrush(QBrush(Qt::white, Qt::SolidPattern));
 			}
 		}
 	}

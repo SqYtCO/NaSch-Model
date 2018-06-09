@@ -17,7 +17,8 @@ SOURCES += \
 	    car_system.cpp \
     	configuration.cpp \
 	    streetwidget.cpp \
-    	preferenceswidget.cpp
+    	preferenceswidget.cpp \
+    core.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -25,7 +26,12 @@ HEADERS += \
     car_system.h \
     configuration.h \
     streetwidget.h \
-    preferenceswidget.h
+    preferenceswidget.h \
+    running_configuration.h \
+    core.h
 
 RESOURCES += \
     resources.qrc
+
+DISTFILES += \
+    cut-off

@@ -5,12 +5,16 @@
 
 namespace Default_Values
 {
-	constexpr std::size_t STREET_LENGTH = 1000;
-	constexpr std::size_t STREET_LANES = 1;
-	constexpr std::size_t CELL_SIZE = 50;
+	constexpr std::size_t STREET_LENGTH = 100;
+	constexpr std::size_t STREET_LANES = 100;
+	constexpr std::size_t CELL_SIZE = 100;
 	constexpr std::size_t SLOW_DOWN_CHANCE = 0;
-	constexpr std::size_t CAR_DENSITY = 20;
-	constexpr std::size_t MAX_SPEED = 5;
+	constexpr std::size_t CAR_DENSITY = 10;
+	constexpr std::size_t MAX_SPEED = 50;
+	constexpr bool DIAGRAM_MODE = false;
+	constexpr bool SHOW_SPEED_COLOR = true;
+	constexpr bool LONG_STREET_BREAK = true;
+	constexpr bool SHOW_CARS = false;
 }
 
 class Configuration
@@ -30,6 +34,10 @@ private:
 	std::size_t slow_down_chance;		// percent
 	std::size_t car_density;			// percent
 	std::size_t max_speed;
+	bool diagram_mode;
+	bool show_speed_color;
+	bool long_street_break;
+	bool show_cars;
 
 // get options
 public:
@@ -39,6 +47,11 @@ public:
 	const std::size_t& get_slow_down_chance() const { return slow_down_chance; }
 	const std::size_t& get_car_density() const { return car_density; }
 	const std::size_t& get_max_speed() const { return max_speed; }
+	const bool& get_diagram_mode() const { return diagram_mode; }
+	const bool& get_show_speed_color() const { return show_speed_color; }
+	const bool& get_long_street_break() const { return long_street_break; }
+	const bool& get_show_cars() const { return show_cars; }
+//	const bool& get_() const { return ; }
 
 // set options
 public:
@@ -48,6 +61,11 @@ public:
 	void set_slow_down_chance(const std::size_t& new_slow_down_chance) { slow_down_chance = new_slow_down_chance; }
 	void set_car_density(const std::size_t& new_car_density) { car_density = new_car_density; }
 	void set_max_speed(const std::size_t& new_max_speed) { max_speed = new_max_speed; }
+	void set_diagram_mode(const bool& new_diagram_mode) { diagram_mode = new_diagram_mode; }
+	void set_show_speed_color(const bool& new_show_speed_color) { show_speed_color = new_show_speed_color; }
+	void set_long_street_break(const bool& new_long_street_break) { long_street_break = new_long_street_break; }
+	void set_show_cars(const bool& new_show_cars) { show_cars = new_show_cars; }
+//	void set_(const bool& new_) {  = new_; }
 };
 
 #endif // CONFIGURATION_H
