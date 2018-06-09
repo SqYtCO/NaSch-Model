@@ -24,6 +24,11 @@ public:
 	void translate();
 	void load_values();
 
+	// enable the focus of all children and the widget
+	void enable_focus();
+	// disable the focus of all children and the widget
+	void disable_focus();
+
 public:
 	QGridLayout size_layout;
 	QLabel length_text;
@@ -40,8 +45,6 @@ public:
 	QLabel car_density_unit;
 	QLabel max_speed_text;
 	QSpinBox max_speed_input;
-
-
 };
 
 #endif // PREFERENCESWIDGET_H

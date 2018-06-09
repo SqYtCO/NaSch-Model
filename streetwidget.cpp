@@ -35,14 +35,17 @@ void StreetWidget::paintEvent(QPaintEvent* event)
 				}
 			}
 
-			if(b == 0)
+			/*if(b == 0)
 			{
 				painter.setBrush(QBrush(Qt::lightGray, Qt::SolidPattern));
-				painter.drawRect(x, y1 + y2, config.get_cell_size(), config.get_cell_size());
+				painter.drawRect(0, y1 + y2, config.get_cell_size(), config.get_cell_size());
 				painter.setBrush(QBrush(Qt::white, Qt::SolidPattern));
 			}
-			else
+			else*/
+			{
+				painter.setBrush(QBrush(Qt::white, Qt::SolidPattern));
 				painter.drawRect(x, y1 + y2, config.get_cell_size(), config.get_cell_size());
+			}
 
 			if(cars.is_slow_down_at(b, a))
 			{
@@ -91,6 +94,8 @@ void StreetWidget::keyPressEvent(QKeyEvent* event)
 		cars.new_random();
 
 	update();
+
+	event->ignore();
 }
 
 void StreetWidget::wheelEvent(QWheelEvent* event)

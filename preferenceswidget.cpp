@@ -1,4 +1,5 @@
 #include "preferenceswidget.h"
+#include <QKeyEvent>
 
 PreferencesWidget::PreferencesWidget(QWidget* parent) : QWidget(parent)
 {
@@ -6,6 +7,8 @@ PreferencesWidget::PreferencesWidget(QWidget* parent) : QWidget(parent)
 	this->setPalette(QPalette(Qt::darkGray));
 
 	initGUI();
+
+	this->setFocusProxy(parent);
 }
 
 void PreferencesWidget::initGUI()
@@ -83,4 +86,32 @@ void PreferencesWidget::load_values()
 	car_density_input.setValue(config.get_car_density());
 	slow_down_chance_input.setValue(config.get_slow_down_chance());
 	max_speed_input.setValue(config.get_max_speed());
+}
+
+void PreferencesWidget::enable_focus()
+{
+	// allow focus to all children
+	for(QObject* a : this->children())
+	{
+		auto b = dynamic_cast<QWidget*>(a);
+		if(b)
+			b->setFocusPolicy(Qt::StrongFocus);
+	}
+
+	// enable own focus
+	this->setFocusPolicy(Qt::StrongFocus);
+}
+
+void PreferencesWidget::disable_focus()
+{
+	// revoke focus of all children
+	for(QObject* a : this->children())
+	{
+		auto b = dynamic_cast<QWidget*>(a);
+		if(b)
+			b->setFocusPolicy(Qt::NoFocus);
+	}
+
+	// disable own focus
+	this->setFocusPolicy(Qt::NoFocus);
 }
