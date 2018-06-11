@@ -10,54 +10,49 @@ class Car_System
 {
 	std::vector<Car> cars;
 	std::size_t car_id;
-	Configuration config;
 	std::vector< std::vector<std::size_t> > slow_down;
 	std::vector< std::vector<std::size_t> > barriers;
+	std::size_t length;
+	std::size_t lanes;
+	std::size_t car_density;
+	std::size_t max_speed;
+	std::size_t slow_down_chance;
 
-	std::size_t performance_us;
+	void calculate();
 
 public:
-	Car_System();
+	Car_System(const std::size_t& length, const std::size_t& lanes, const std::size_t& car_density, const std::size_t& max_speed, const std::size_t& slow_down_chance);
 
 	void generate();
-	void new_random();
+	void new_random(const std::size_t& length, const std::size_t& lanes, const std::size_t& car_density, const std::size_t& max_speed);
 
-	const Car& get_car(const std::size_t& pos, const std::size_t& lane = 0)
-	{
-		for(const auto& a : cars)
-			if(a.pos == pos && a.lane == lane)
-				return a;
+	void reset();
 
-		return cars[0];
-	}
+	void add_car(const std::size_t& speed, const std::size_t& pos, const std::size_t& lane = 0);
+	void remove_car(const std::size_t& pos, const std::size_t& lane = 0);
+	void set_car_speed(const std::size_t& speed, const std::size_t& pos, const std::size_t& lane = 0);
 
-	// pos: 0 -> (x-1); lane: 0 -> (y-1)
-	bool is_car_at(const std::size_t& pos, const std::size_t& lane = 0)
-	{
-		for(const auto& a : cars)
-			if(a.pos == pos && a.lane == lane)
-				return true;
+	void add_barrier(const std::size_t& pos, const std::size_t& lane = 0);
+	void remove_barrier(const std::size_t& pos, const std::size_t& lane = 0);
 
-		return false;
-	}
-	bool is_slow_down_at(const std::size_t& pos, const std::size_t& lane = 0) { return std::find(slow_down[lane].begin(), slow_down[lane].end(), pos) != slow_down[lane].end(); }
-	bool is_barrier_at(const std::size_t& pos, const std::size_t& lane = 0) { return std::find(barriers[lane].begin(), barriers[lane].end(), pos) != barriers[lane].end(); }
-	std::size_t get_speed(const std::size_t& pos, const std::size_t& lane = 0)
-	{
-		for(const auto& a : cars)
-			if(a.pos == pos && a.lane == lane)
-				return a.speed;
+	void add_slow_down(const std::size_t& pos, const std::size_t& lane = 0);
+	void remove_slow_down(const std::size_t& pos, const std::size_t& lane = 0);
 
-		return 0;
-	}
-	std::size_t get_id(const std::size_t& pos, const std::size_t& lane = 0)
-	{
-		for(const auto& a : cars)
-			if(a.pos == pos && a.lane == lane)
-				return a.id;
+	double get_avg_speed();
+	std::size_t get_car_amount() { return cars.size(); }
 
-		return 0;
-	}
+	const Car& get_car(const std::size_t& pos, const std::size_t& lane = 0);
+	std::size_t get_speed(const std::size_t& pos, const std::size_t& lane = 0);
+	std::size_t get_id(const std::size_t& pos, const std::size_t& lane = 0);
+	bool is_car_at(const std::size_t& pos, const std::size_t& lane = 0);
+	bool is_slow_down_at(const std::size_t& pos, const std::size_t& lane = 0);
+	bool is_barrier_at(const std::size_t& pos, const std::size_t& lane = 0);
+
+	const std::size_t& get_length() { return length; }
+	const std::size_t& get_lanes() { return lanes; }
+	const std::size_t& get_car_density() { return car_density; }
+	const std::size_t& get_max_speed() { return max_speed; }
+	const std::size_t& get_slow_down_chance() { return slow_down_chance; }
 };
 
 #endif // CAR_SYSTEM_H

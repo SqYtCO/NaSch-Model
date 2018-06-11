@@ -3,30 +3,28 @@
 
 enum Tool
 {
-	Create_Car,
-	Increase_Speed,
-	Decrease_Speed,
-	Create_Slow_Down,
-	Create_Barrier,
-	Delete
+	Car_Tool,
+	Speed_Tool,
+	Barrier_Tool,
+	Slow_Down_Tool
 };
 
 class Running_Configuration
 {
 public:
-	Running_Configuration() = default;
+	Running_Configuration() : tool(Car_Tool) {	}
 
 // options
 private:
-	Tool selected_tool;
+	Tool tool;
 
 // set options
 public:
-
+	inline void set_tool(const Tool& new_tool) { tool = new_tool; }
 
 // get options
 public:
-
+	inline const Tool& get_tool() const { return tool; }
 };
 
 #endif // RUNNING_CONFIGURATION_H

@@ -1,5 +1,20 @@
 <RCC>
     <qresource prefix="/">
         <file>images/car-200.png</file>
+        <file>images/fullscreen-90.png</file>
+        <file>images/germany-flag-90.png</file>
+        <file>images/help-90.png</file>
+        <file>images/play-90.png</file>
+        <file>images/play-to-90.png</file>
+        <file>images/preferences-90.png</file>
+        <file>images/stop-90.png</file>
+        <file>images/usa-flag-90.png</file>
+        <file>images/white-index-90.png</file>
+        <file>info/de_help.html</file>
+        <file>info/de_welcome.html</file>
+        <file>info/en_help.html</file>
+        <file>info/en_welcome.html</file>
+        <file>translations/nasch_de.qm</file>
+        <file>translations/qtbase_de.qm</file>
     </qresource>
 </RCC>

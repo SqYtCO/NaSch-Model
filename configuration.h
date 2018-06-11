@@ -2,73 +2,65 @@
 #define CONFIGURATION_H
 
 #include <cstddef>
+#include <string>
 
 namespace Default_Values
 {
 	constexpr std::size_t STREET_LENGTH = 1000;
 	constexpr std::size_t STREET_LANES = 1;
-	constexpr std::size_t CELL_SIZE = 100;
 	constexpr std::size_t SLOW_DOWN_CHANCE = 0;
-	constexpr std::size_t CAR_DENSITY = 15;
-	constexpr std::size_t MAX_SPEED = 5;
+	constexpr std::size_t CAR_DENSITY = 5;
+	constexpr std::size_t MAX_SPEED = 20;
 	constexpr bool LANE_RULES = false;
-	constexpr bool DIAGRAM_MODE = false;
-	constexpr bool SHOW_SPEED_COLOR = true;
-	constexpr bool LONG_STREET_BREAK = true;
-	constexpr bool SHOW_CARS = false;
 }
 
 class Configuration
 {
+	bool saved;
+
+protected:
+	static constexpr const char* CONFIG_FILE = ".configuration";
+	std::string config_path;
+
 public:
 	Configuration();
+
+	// config_path has to be empty or end on a separator; after setting config_path read config
+	void set_config_path(const std::string& new_config_path) { config_path = new_config_path; read_config(); }
 
 	bool write_config();
 	bool read_config();
 	void reset_config();
 
+	const bool& is_saved() { return saved; }
+
 // options
 private:
 	std::size_t street_length;
 	std::size_t street_lanes;
-	std::size_t cell_size;
 	std::size_t slow_down_chance;		// percent
 	std::size_t car_density;			// percent
 	std::size_t max_speed;
 	bool lane_rules;
-	bool diagram_mode;
-	bool show_speed_color;
-	bool long_street_break;
-	bool show_cars;
 
 // get options
 public:
-	const std::size_t& get_street_length() const { return street_length; }
-	const std::size_t& get_street_lanes() const { return street_lanes; }
-	const std::size_t& get_cell_size() const { return cell_size; }
-	const std::size_t& get_slow_down_chance() const { return slow_down_chance; }
-	const std::size_t& get_car_density() const { return car_density; }
-	const std::size_t& get_max_speed() const { return max_speed; }
-	const bool& get_lane_rules() const { return lane_rules; }
-	const bool& get_diagram_mode() const { return diagram_mode; }
-	const bool& get_show_speed_color() const { return show_speed_color; }
-	const bool& get_long_street_break() const { return long_street_break; }
-	const bool& get_show_cars() const { return show_cars; }
+	inline const std::size_t& get_street_length() const { return street_length; }
+	inline const std::size_t& get_street_lanes() const { return street_lanes; }
+	inline const std::size_t& get_slow_down_chance() const { return slow_down_chance; }
+	inline const std::size_t& get_car_density() const { return car_density; }
+	inline const std::size_t& get_max_speed() const { return max_speed; }
+	inline const bool& get_lane_rules() const { return lane_rules; }
 //	const bool& get_() const { return ; }
 
 // set options
 public:
-	void set_street_length(const std::size_t& new_street_length) { street_length = new_street_length; }
-	void set_street_lanes(const std::size_t& new_street_lanes) { street_lanes = new_street_lanes; }
-	void set_cell_size(const std::size_t& new_cell_size) { cell_size = new_cell_size; }
-	void set_slow_down_chance(const std::size_t& new_slow_down_chance) { slow_down_chance = new_slow_down_chance; }
-	void set_car_density(const std::size_t& new_car_density) { car_density = new_car_density; }
-	void set_max_speed(const std::size_t& new_max_speed) { max_speed = new_max_speed; }
-	void set_lane_rules(const bool& new_lane_rules) { lane_rules = new_lane_rules; }
-	void set_diagram_mode(const bool& new_diagram_mode) { diagram_mode = new_diagram_mode; }
-	void set_show_speed_color(const bool& new_show_speed_color) { show_speed_color = new_show_speed_color; }
-	void set_long_street_break(const bool& new_long_street_break) { long_street_break = new_long_street_break; }
-	void set_show_cars(const bool& new_show_cars) { show_cars = new_show_cars; }
+	inline void set_street_length(const std::size_t& new_street_length) { saved = false; street_length = new_street_length; }
+	inline void set_street_lanes(const std::size_t& new_street_lanes) { saved = false; street_lanes = new_street_lanes; }
+	inline void set_slow_down_chance(const std::size_t& new_slow_down_chance) { saved = false; slow_down_chance = new_slow_down_chance; }
+	inline void set_car_density(const std::size_t& new_car_density) { saved = false; car_density = new_car_density; }
+	inline void set_max_speed(const std::size_t& new_max_speed) { saved = false; max_speed = new_max_speed; }
+	inline void set_lane_rules(const bool& new_lane_rules) { saved = false; lane_rules = new_lane_rules; }
 //	void set_(const bool& new_) {  = new_; }
 };
 
