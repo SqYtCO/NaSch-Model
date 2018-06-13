@@ -24,7 +24,7 @@ public:
 	Car_System(const std::size_t& length, const std::size_t& lanes, const std::size_t& car_density, const std::size_t& max_speed, const std::size_t& slow_down_chance);
 
 	void generate();
-	void new_random(const std::size_t& length, const std::size_t& lanes, const std::size_t& car_density, const std::size_t& max_speed);
+	void create(const std::size_t& length, const std::size_t& lanes, const std::size_t& car_density, const std::size_t& max_speed, const std::size_t& slow_down_chance);
 
 	void reset();
 
@@ -42,8 +42,8 @@ public:
 	std::size_t get_car_amount() { return cars.size(); }
 
 	const Car& get_car(const std::size_t& pos, const std::size_t& lane = 0);
-	std::size_t get_speed(const std::size_t& pos, const std::size_t& lane = 0);
-	std::size_t get_id(const std::size_t& pos, const std::size_t& lane = 0);
+	long get_speed(const std::size_t& pos, const std::size_t& lane = 0);
+	long get_id(const std::size_t& pos, const std::size_t& lane = 0);
 	bool is_car_at(const std::size_t& pos, const std::size_t& lane = 0);
 	bool is_slow_down_at(const std::size_t& pos, const std::size_t& lane = 0);
 	bool is_barrier_at(const std::size_t& pos, const std::size_t& lane = 0);

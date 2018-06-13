@@ -6,6 +6,16 @@
 
 QT += core gui widgets
 
+# measure time of calculation while autogenerating in microseconds and output the result on the console
+DEFINES += ENABLE_CALC_TIME_MEASUREMENT
+# measure time of drawing cells in microseconds and output the result on the console
+DEFINES += ENABLE_DRAW_TIME_MEASUREMENT
+
+# enable some charts
+DEFINES += CREATE_CHARTS
+
+contains(DEFINES, CREATE_CHARTS): QT += charts
+
 TARGET = nasch-model
 TEMPLATE = app
 
@@ -28,7 +38,8 @@ SOURCES += \
 	graphiccore.cpp \
 	graphicconfiguration.cpp \
 	startupdialog.cpp \
-    infowidget.cpp
+	infowidget.cpp \
+	chartwidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -44,7 +55,8 @@ HEADERS += \
 	graphiccore.h \
 	graphicconfiguration.h \
 	startupdialog.h \
-    infowidget.h
+	infowidget.h \
+	chartwidget.h
 
 RESOURCES += \
 	resources.qrc

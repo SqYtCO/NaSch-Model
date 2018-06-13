@@ -128,6 +128,15 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 	}
 	else if(event->key() == Qt::Key_Q)
 		close();
+#ifdef CREATE_CHARTS
+	else if(event->key() == Qt::Key_C)
+	{
+		if(GraphicCore::get_instance()->get_chart()->isVisible())
+			GraphicCore::get_instance()->get_chart()->close();
+		else
+			GraphicCore::get_instance()->get_chart()->show();
+	}
+#endif
 }
 
 void MainWindow::resizeEvent(QResizeEvent*)
@@ -138,6 +147,9 @@ void MainWindow::resizeEvent(QResizeEvent*)
 void MainWindow::closeEvent(QCloseEvent* event)
 {
 	GraphicCore::get_instance()->stop();
+#ifdef CREATE_CHARTS
+	GraphicCore::get_instance()->get_chart()->close();
+#endif
 
 	// if any preference is not saved, show question; this question is necessary if the user is in the preferences view and tries to close the window
 	if(!(Core::get_instance()->get_config()->is_saved() && GraphicCore::get_instance()->get_config()->is_saved()))

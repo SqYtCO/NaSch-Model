@@ -4,15 +4,12 @@
 #include "graphicconfiguration.h"
 #include "running_configuration.h"
 #include "streetwidget.h"
+#ifdef CREATE_CHARTS
+#include "chartwidget.h"
+#endif
 #include <QString>
 #include <thread>
 #include <atomic>
-
-// measure time of calculation while autogenerating in microseconds and output the result on the console
-#define ENABLE_CALC_TIME_MEASUREMENT
-
-// measure time of drawing cells in microseconds and output the result on the console
-#define ENABLE_DRAW_TIME_MEASUREMENT
 
 class GraphicCore
 {
@@ -20,6 +17,9 @@ class GraphicCore
 	Running_Configuration run_config;
 	QWidget parent;
 	StreetWidget* street;
+#ifdef CREATE_CHARTS
+	ChartWidget* chart;
+#endif
 
 	std::thread* run_thread;
 	std::atomic_bool stop_thread;
@@ -52,6 +52,9 @@ public:
 	GraphicConfiguration* get_config() { return &config; }
 	Running_Configuration* get_run_config() { return &run_config; }
 	StreetWidget* get_street() { return street; }
+#ifdef CREATE_CHARTS
+	ChartWidget* get_chart() { return chart; }
+#endif
 };
 
 #endif // GRAPHICCORE_H

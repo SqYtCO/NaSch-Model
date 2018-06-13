@@ -7,7 +7,9 @@
 
 GraphicCore::GraphicCore() : street(new StreetWidget(&parent)), run_thread(nullptr)
 {
-
+#ifdef CREATE_CHARTS
+	chart = new ChartWidget();
+#endif
 }
 
 GraphicCore::~GraphicCore()
@@ -71,6 +73,36 @@ void GraphicCore::step()
 	Core::get_instance()->step();
 	street->update_data();
 	street->update();
+
+#ifdef CREATE_CHARTS
+	chart->set_slow_down_data(Core::get_instance()->get_slow_down_chance(), Core::get_instance()->get_avg_speed(), Core::get_instance()->get_time());
+
+	std::vector< std::pair<std::size_t, std::size_t> > speeds;
+	for(std::size_t lane = 0; lane < Core::get_instance()->get_lanes(); ++lane)
+	{
+		for(std::size_t pos = 0; pos < Core::get_instance()->get_length(); ++pos)
+		{
+			long speed = Core::get_instance()->get_speed(pos, lane);
+			if(speed < 0)
+				continue;
+
+			std::size_t i = 0;
+			for(; i < speeds.size(); ++i)
+				if(speeds[i].first == speed)
+				{
+					++speeds[i].second;
+					break;
+				}
+
+			if(i == speeds.size())
+			{
+				speeds.push_back(std::make_pair(speed, 1));
+			}
+		}
+	}
+	chart->set_car_speed_data(speeds);
+#endif
+
 #ifdef ENABLE_CALC_TIME_MEASUREMENT
 	auto end = std::chrono::high_resolution_clock::now();
 	qInfo() << "calc: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();

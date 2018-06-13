@@ -28,7 +28,7 @@ bool Core::load(const std::string& file)
 
 void Core::new_game()
 {
-	system.new_random(config.get_street_length(), config.get_street_lanes(), config.get_car_density(), config.get_max_speed());
+	system.create(config.get_street_length(), config.get_street_lanes(), config.get_car_density(), config.get_max_speed(), config.get_slow_down_chance());
 	time = 0;
 }
 

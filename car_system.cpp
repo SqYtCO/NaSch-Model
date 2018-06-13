@@ -10,7 +10,7 @@ Car_System::Car_System(const std::size_t& length, const std::size_t& lanes, cons
 	slow_down.resize(lanes);
 	barriers.resize(lanes);
 
-	new_random(length, lanes, car_density, max_speed);
+	create(length, lanes, car_density, max_speed, slow_down_chance);
 }
 
 void Car_System::calculate()
@@ -66,12 +66,13 @@ void Car_System::generate()
 	}
 }
 
-void Car_System::new_random(const std::size_t& length, const std::size_t& lanes, const std::size_t& car_density, const std::size_t& max_speed)
+void Car_System::create(const std::size_t& length, const std::size_t& lanes, const std::size_t& car_density, const std::size_t& max_speed, const std::size_t& slow_down_chance)
 {
 	this->length = length;
 	this->lanes = lanes;
 	this->car_density = car_density;
 	this->max_speed = max_speed;
+	this->slow_down_chance = slow_down_chance;
 
 	// random machine
 	std::random_device rd;
@@ -183,22 +184,22 @@ const Car& Car_System::get_car(const std::size_t& pos, const std::size_t& lane)
 	return cars[0];
 }
 
-std::size_t Car_System::get_speed(const std::size_t& pos, const std::size_t& lane)
+long Car_System::get_speed(const std::size_t& pos, const std::size_t& lane)
 {
 	for(const auto& a : cars)
 		if(a.pos == pos && a.lane == lane)
 			return a.speed;
 
-	return 0;
+	return -1;
 }
 
-std::size_t Car_System::get_id(const std::size_t& pos, const std::size_t& lane)
+long Car_System::get_id(const std::size_t& pos, const std::size_t& lane)
 {
 	for(const auto& a : cars)
 		if(a.pos == pos && a.lane == lane)
 			return a.id;
 
-	return 0;
+	return -1;
 }
 
 bool Car_System::is_car_at(const std::size_t& pos, const std::size_t& lane)

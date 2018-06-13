@@ -10,8 +10,8 @@
 #endif
 
 StreetWidget::StreetWidget(QWidget* parent) : QWidget(parent), car_image(":/images/car-200.png"),
-												car_colors({ Qt::blue, Qt::green, Qt::gray, Qt::yellow, Qt::darkMagenta, Qt::darkGreen, Qt::cyan, Qt::darkCyan, Qt::darkYellow,
-														   Qt::darkGray, Qt::black }),
+												car_colors{ Qt::blue, Qt::green, Qt::gray, Qt::yellow, Qt::darkMagenta, Qt::darkGreen, Qt::cyan, Qt::darkCyan, Qt::darkYellow,
+														   Qt::darkGray, Qt::black },
 												scale(1), move_x(0), move_y(0)
 {
 	this->setAutoFillBackground(true);
@@ -30,9 +30,9 @@ void StreetWidget::paintEvent(QPaintEvent*)
 
 	painter.scale(scale, scale);
 
-	for(std::size_t a = 0, y1 = 0; a < Core::get_instance()->get_config()->get_street_lanes(); ++a, y1 += GraphicCore::get_instance()->get_config()->get_cell_size())
+	for(std::size_t a = 0, y1 = 0; a < Core::get_instance()->get_lanes(); ++a, y1 += GraphicCore::get_instance()->get_config()->get_cell_size())
 	{
-		for(std::size_t b = 0, x = 0, y2 = 0; b < Core::get_instance()->get_config()->get_street_length(); ++b, x += GraphicCore::get_instance()->get_config()->get_cell_size())
+		for(std::size_t b = 0, x = 0, y2 = 0; b < Core::get_instance()->get_length(); ++b, x += GraphicCore::get_instance()->get_config()->get_cell_size())
 		{
 			if(GraphicCore::get_instance()->get_config()->get_long_street_break())
 			{
@@ -68,7 +68,8 @@ void StreetWidget::paintEvent(QPaintEvent*)
 				{
 					QPixmap temp(car_image.size());
 					if(GraphicCore::get_instance()->get_config()->get_show_speed_color())
-						temp.fill(QColor(0xFF * (static_cast<double>(Core::get_instance()->get_speed(b, a)) / Core::get_instance()->get_max_speed()), 0x00, 0x00));
+						temp.fill(QColor(0xFF * (static_cast<double>(Core::get_instance()->get_speed(b, a)) / Core::get_instance()->get_max_speed()),
+										 (Core::get_instance()->get_speed(b, a) / Core::get_instance()->get_max_speed()) ? 0x8C : 0x00, 0x00));
 					else
 						temp.fill(car_colors[Core::get_instance()->get_id(b, a) % 11]);
 
@@ -83,7 +84,8 @@ void StreetWidget::paintEvent(QPaintEvent*)
 				else
 				{
 					if(GraphicCore::get_instance()->get_config()->get_show_speed_color())
-						painter.setBrush(QBrush(QColor(0xFF * (static_cast<double>(Core::get_instance()->get_speed(b, a)) / Core::get_instance()->get_max_speed()), 0x00, 0x00), Qt::SolidPattern));
+						painter.setBrush(QBrush(QColor(0xFF * (static_cast<double>(Core::get_instance()->get_speed(b, a)) / Core::get_instance()->get_max_speed()),
+														(Core::get_instance()->get_speed(b, a) / Core::get_instance()->get_max_speed()) ? 0x8C : 0x00, 0x00), Qt::SolidPattern));
 					else
 						painter.setBrush(QBrush(car_colors[Core::get_instance()->get_id(b, a) % 11], Qt::SolidPattern));
 
