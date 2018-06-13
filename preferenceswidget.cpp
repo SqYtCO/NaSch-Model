@@ -25,13 +25,13 @@ void PreferencesWidget::init_GUI()
 	init_control();
 	init_language();
 	init_game();
-	init_other();
+	init_appearance();
 
 	// add buttons and groups to main layout
 	main_layout.addWidget(&hide_button, 0, 0);
 	main_layout.addLayout(&language_layout, 0, 1);
 	main_layout.addLayout(&game_layout, 1, 0, 4, 1);
-	main_layout.addLayout(&appearance_layout, 1, 1, 2, 1);
+	main_layout.addLayout(&appearance_layout, 1, 1, 4, 1);
 //	main_layout.addWidget(&application_group, 3, 1, 2, 1);
 //	main_layout.addWidget(&color_group, 1, 2, 4, 1);
 	main_layout.addWidget(&reset_button, 6, 0);
@@ -119,6 +119,10 @@ void PreferencesWidget::init_game()
 	max_speed_input.setMaximum(1000);
 	QObject::connect(&max_speed_input, &QSpinBox::editingFinished, [this]() { Core::get_instance()->get_config()->set_max_speed(max_speed_input.value()); });
 
+	delay_input.setMinimum(1);
+	delay_input.setMaximum(60000);
+	QObject::connect(&delay_input, &QSpinBox::editingFinished, [this]() { GraphicCore::get_instance()->get_config()->set_delay(delay_input.value()); });
+
 	game_layout.addWidget(&length_text, 0, 0);
 	game_layout.addWidget(&length_input, 0, 1);
 	game_layout.addWidget(&lanes_text, 1, 0);
@@ -131,9 +135,11 @@ void PreferencesWidget::init_game()
 	game_layout.addWidget(&slow_down_chance_unit, 3, 2);
 	game_layout.addWidget(&max_speed_text, 4, 0);
 	game_layout.addWidget(&max_speed_input, 4, 1);
+	game_layout.addWidget(&delay_text, 5, 0);
+	game_layout.addWidget(&delay_input, 5, 1);
 }
 
-void PreferencesWidget::init_other()
+void PreferencesWidget::init_appearance()
 {
 	QObject::connect(&break_long_streets_input, &QCheckBox::clicked, [this]()
 	{
@@ -141,7 +147,33 @@ void PreferencesWidget::init_other()
 		GraphicCore::get_instance()->update();
 	});
 
+	QObject::connect(&show_speed_color_input, &QCheckBox::clicked, [this]()
+	{
+		GraphicCore::get_instance()->get_config()->set_show_speed_color(show_speed_color_input.isChecked());
+		GraphicCore::get_instance()->update();
+	});
+
+	QObject::connect(&show_cars_input, &QCheckBox::clicked, [this]()
+	{
+		GraphicCore::get_instance()->get_config()->set_show_cars(show_cars_input.isChecked());
+		GraphicCore::get_instance()->update();
+	});
+
+	QObject::connect(&exit_warning_input, &QCheckBox::clicked, [this]()
+	{
+		GraphicCore::get_instance()->get_config()->set_exit_warning(exit_warning_input.isChecked());
+	});
+
+	QObject::connect(&fullscreen_input, &QCheckBox::clicked, [this]()
+	{
+		GraphicCore::get_instance()->get_config()->set_fullscreen(fullscreen_input.isChecked());
+	});
+
 	appearance_layout.addWidget(&break_long_streets_input, 0, 0);
+	appearance_layout.addWidget(&show_speed_color_input, 1, 0);
+	appearance_layout.addWidget(&show_cars_input, 2, 0);
+	appearance_layout.addWidget(&exit_warning_input, 3, 0);
+	appearance_layout.addWidget(&fullscreen_input, 4, 0);
 }
 
 void PreferencesWidget::translate()
@@ -153,8 +185,13 @@ void PreferencesWidget::translate()
 	slow_down_chance_text.setText(tr("Propability Of Deceleration"));
 	slow_down_chance_unit.setText("%");
 	max_speed_text.setText(tr("Maximum Speed"));
+	delay_text.setText(tr("Delay"));
 
 	break_long_streets_input.setText(tr("Break Long Streets"));
+	show_speed_color_input.setText(tr("Show Speed By Color"));
+	show_cars_input.setText(tr("Show Cars"));
+	exit_warning_input.setText(tr("Show Exit Warning"));
+	fullscreen_input.setText(tr("Start In Fullscreen Mode"));
 }
 
 void PreferencesWidget::load_values()
@@ -164,8 +201,13 @@ void PreferencesWidget::load_values()
 	car_density_input.setValue(Core::get_instance()->get_config()->get_car_density());
 	slow_down_chance_input.setValue(Core::get_instance()->get_config()->get_slow_down_chance());
 	max_speed_input.setValue(Core::get_instance()->get_config()->get_max_speed());
+	delay_input.setValue(GraphicCore::get_instance()->get_config()->get_delay());
 
 	break_long_streets_input.setChecked(GraphicCore::get_instance()->get_config()->get_long_street_break());
+	show_speed_color_input.setChecked(GraphicCore::get_instance()->get_config()->get_show_speed_color());
+	show_cars_input.setChecked(GraphicCore::get_instance()->get_config()->get_show_cars());
+	exit_warning_input.setChecked(GraphicCore::get_instance()->get_config()->get_exit_warning());
+	fullscreen_input.setChecked(GraphicCore::get_instance()->get_config()->get_fullscreen());
 }
 
 void PreferencesWidget::apply()

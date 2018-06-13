@@ -20,7 +20,7 @@ class PreferencesWidget : public QFrame
 	void init_control();
 	void init_language();
 	void init_game();
-	void init_other();
+	void init_appearance();
 
 public:
 	PreferencesWidget(QWidget* parent = nullptr);
@@ -70,9 +70,15 @@ private:
 	QLabel car_density_unit;
 	QLabel max_speed_text;
 	QSpinBox max_speed_input;
+	QLabel delay_text;
+	QSpinBox delay_input;
 
 	QGridLayout appearance_layout;
 	QCheckBox break_long_streets_input;
+	QCheckBox show_speed_color_input;
+	QCheckBox  show_cars_input;
+	QCheckBox  exit_warning_input;
+	QCheckBox  fullscreen_input;
 };
 
 #endif // PREFERENCESWIDGET_H
