@@ -26,7 +26,7 @@ class HelpWidget : public QFrame
 	// jump to anchor "index"
 	QToolButton show_index;
 
-	void init_GUI();
+	void init_gui();
 
 public:
 	HelpWidget(QWidget* parent = nullptr);

@@ -43,7 +43,6 @@ SOURCES += \
 
 HEADERS += \
         mainwindow.h \
-	car.h \
 	car_system.h \
 	configuration.h \
 	streetwidget.h \

@@ -9,6 +9,13 @@
 #include <QFileDialog>
 #include <QKeyEvent>
 
+#define TOOL_VIEW_TOP_HIDE_POINT QPoint(GraphicCore::get_instance()->get_street()->x(), GraphicCore::get_instance()->get_street()->y())
+#define TOOL_VIEW_TOP_SHOW_POINT QPoint(GraphicCore::get_instance()->get_street()->x(), GraphicCore::get_instance()->get_street()->y())
+#define TOOL_VIEW_BOTTOM_HIDE_POINT QPoint(GraphicCore::get_instance()->get_street()->x(), GraphicCore::get_instance()->get_street()->y() + GraphicCore::get_instance()->get_street()->height())
+#define TOOL_VIEW_BOTTOM_SHOW_POINT QPoint(GraphicCore::get_instance()->get_street()->x(), GraphicCore::get_instance()->get_street()->y() + GraphicCore::get_instance()->get_street()->height() - tool_view.height())
+#define TOOL_VIEW_HIDE_POINT TOOL_VIEW_BOTTOM_HIDE_POINT
+#define TOOL_VIEW_SHOW_POINT TOOL_VIEW_BOTTOM_SHOW_POINT
+
 MainWindow::MainWindow(const char* start_file, QWidget* parent) : QMainWindow(parent),
 											preferences_view(this), preferences_animation(&preferences_view, "pos"),
 											tool_view(this), tool_animation(&tool_view, "pos"),
@@ -19,7 +26,7 @@ MainWindow::MainWindow(const char* start_file, QWidget* parent) : QMainWindow(pa
 		GraphicCore::get_instance()->load(start_file);
 
 	// setup GUI and set current active view
-	init_GUI();
+	init_gui();
 	current_view = Street_View;
 
 	// set minimum size
@@ -208,7 +215,7 @@ void MainWindow::show()
 	resize_timer.start();
 }
 
-void MainWindow::init_GUI()
+void MainWindow::init_gui()
 {
 	// set central widget
 	setCentralWidget(GraphicCore::get_instance()->get_street());
@@ -261,7 +268,7 @@ void MainWindow::update_views_geometry()
 		show_preference_view();
 		if(!(current_view & Help_View))
 			help_view.move(-help_view.width(), GraphicCore::get_instance()->get_street()->y());
-		tool_view.move(GraphicCore::get_instance()->get_street()->y(), -tool_view.height());
+		tool_view.move(TOOL_VIEW_HIDE_POINT);
 		info_view.move(width() - info_view.width(), height());
 	}
 	else if(current_view & Help_View)
@@ -269,7 +276,7 @@ void MainWindow::update_views_geometry()
 		show_help_view();
 		if(!(current_view & Preferences_View))
 			preferences_view.move(width(), GraphicCore::get_instance()->get_street()->y());
-		tool_view.move(GraphicCore::get_instance()->get_street()->y(), -tool_view.height());
+		tool_view.move(TOOL_VIEW_HIDE_POINT);
 		info_view.move(width() - info_view.width(), height());
 	}
 	else if(current_view & Tool_View)
@@ -283,13 +290,13 @@ void MainWindow::update_views_geometry()
 		show_info_view();
 		preferences_view.move(width(), GraphicCore::get_instance()->get_street()->y());
 		help_view.move(-help_view.width(), GraphicCore::get_instance()->get_street()->y());
-		tool_view.move(GraphicCore::get_instance()->get_street()->y(), -tool_view.height());
+		tool_view.move(TOOL_VIEW_HIDE_POINT);
 	}
 	else
 	{
 		preferences_view.move(width(), GraphicCore::get_instance()->get_street()->y());
 		help_view.move(-help_view.width(), GraphicCore::get_instance()->get_street()->y());
-		tool_view.move(GraphicCore::get_instance()->get_street()->y(), -tool_view.height());
+		tool_view.move(TOOL_VIEW_HIDE_POINT);
 		info_view.move(width() - info_view.width(), height());
 	}
 }
@@ -306,7 +313,7 @@ void MainWindow::show_preference_view()
 	if(current_view & Tool_View)
 	{
 		tool_animation.setStartValue(tool_view.pos());
-		tool_animation.setEndValue(QPoint(GraphicCore::get_instance()->get_street()->x(), -tool_view.height()));
+		tool_animation.setEndValue(TOOL_VIEW_HIDE_POINT);
 		tool_animation.setDuration(ANIMATION_TIME);
 		tool_animation.stop();
 		tool_animation.start();
@@ -388,7 +395,8 @@ void MainWindow::hide_preference_view()
 void MainWindow::show_tool_view()
 {
 	tool_animation.setStartValue(tool_view.pos());
-	tool_animation.setEndValue(QPoint(GraphicCore::get_instance()->get_street()->x(), GraphicCore::get_instance()->get_street()->y()));
+	tool_animation.setEndValue(TOOL_VIEW_SHOW_POINT);
+
 	tool_animation.setDuration(ANIMATION_TIME);
 	tool_animation.stop();
 	tool_animation.start();
@@ -402,7 +410,8 @@ void MainWindow::show_tool_view()
 void MainWindow::hide_tool_view()
 {
 	tool_animation.setStartValue(tool_view.pos());
-	tool_animation.setEndValue(QPoint(GraphicCore::get_instance()->get_street()->x(), -tool_view.height()));
+	tool_animation.setEndValue(TOOL_VIEW_HIDE_POINT);
+
 	tool_animation.setDuration(ANIMATION_TIME);
 	tool_animation.stop();
 	tool_animation.start();
@@ -420,7 +429,7 @@ void MainWindow::show_help_view()
 	if(current_view & Tool_View)
 	{
 		tool_animation.setStartValue(tool_view.pos());
-		tool_animation.setEndValue(QPoint(GraphicCore::get_instance()->get_street()->x(), -tool_view.height()));
+		tool_animation.setEndValue(TOOL_VIEW_HIDE_POINT);
 		tool_animation.setDuration(ANIMATION_TIME);
 		tool_animation.stop();
 		tool_animation.start();

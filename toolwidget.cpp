@@ -18,14 +18,14 @@ ToolWidget::ToolWidget(QWidget* parent) : QFrame(parent)
 	this->setFrameShape(QFrame::Panel);
 	this->setLineWidth(2);
 
-	init_GUI();
+	init_gui();
 
 	this->setFocusProxy(parent);
 
 	this->setFixedHeight(TOOL_HEIGHT);
 }
 
-void ToolWidget::init_GUI()
+void ToolWidget::init_gui()
 {
 	init_control_buttons();
 	init_tool_buttons();

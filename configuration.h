@@ -45,21 +45,21 @@ private:
 
 // get options
 public:
-	inline const std::size_t& get_street_length() const { return street_length; }
-	inline const std::size_t& get_street_lanes() const { return street_lanes; }
-	inline const std::size_t& get_slow_down_chance() const { return slow_down_chance; }
-	inline const std::size_t& get_car_density() const { return car_density; }
-	inline const std::size_t& get_max_speed() const { return max_speed; }
+	inline std::size_t get_street_length() const { return street_length; }
+	inline std::size_t get_street_lanes() const { return street_lanes; }
+	inline std::size_t get_slow_down_chance() const { return slow_down_chance; }
+	inline std::size_t get_car_density() const { return car_density; }
+	inline std::size_t get_max_speed() const { return max_speed; }
 	inline const bool& get_lane_rules() const { return lane_rules; }
 //	const bool& get_() const { return ; }
 
 // set options
 public:
-	inline void set_street_length(const std::size_t& new_street_length) { saved = false; street_length = new_street_length; }
-	inline void set_street_lanes(const std::size_t& new_street_lanes) { saved = false; street_lanes = new_street_lanes; }
-	inline void set_slow_down_chance(const std::size_t& new_slow_down_chance) { saved = false; slow_down_chance = new_slow_down_chance; }
-	inline void set_car_density(const std::size_t& new_car_density) { saved = false; car_density = new_car_density; }
-	inline void set_max_speed(const std::size_t& new_max_speed) { saved = false; max_speed = new_max_speed; }
+	inline void set_street_length(std::size_t new_street_length) { saved = false; street_length = new_street_length; }
+	inline void set_street_lanes(std::size_t new_street_lanes) { saved = false; street_lanes = new_street_lanes; }
+	inline void set_slow_down_chance(std::size_t new_slow_down_chance) { saved = false; slow_down_chance = new_slow_down_chance; }
+	inline void set_car_density(std::size_t new_car_density) { saved = false; car_density = new_car_density; }
+	inline void set_max_speed(std::size_t new_max_speed) { saved = false; max_speed = new_max_speed; }
 	inline void set_lane_rules(const bool& new_lane_rules) { saved = false; lane_rules = new_lane_rules; }
 //	void set_(const bool& new_) {  = new_; }
 };

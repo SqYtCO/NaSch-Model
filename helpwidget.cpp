@@ -18,10 +18,10 @@ HelpWidget::HelpWidget(QWidget* parent) : QFrame(parent)
 
 	this->setFocusProxy(parent);
 
-	init_GUI();
+	init_gui();
 }
 
-void HelpWidget::init_GUI()
+void HelpWidget::init_gui()
 {
 	// init hide button
 	hide.setArrowType(Qt::LeftArrow);

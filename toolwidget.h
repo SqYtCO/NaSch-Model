@@ -20,7 +20,7 @@ class ToolWidget : public QFrame
 	QHBoxLayout main_layout;
 
 	// setup GUI and add components to main_layout
-	void init_GUI();
+	void init_gui();
 	// init preferences, help, hide and quit button
 	void init_control_buttons();
 	// init tool buttons

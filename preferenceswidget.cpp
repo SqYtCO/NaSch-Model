@@ -17,10 +17,10 @@ PreferencesWidget::PreferencesWidget(QWidget* parent) : QFrame(parent), new_game
 	this->setLineWidth(2);
 
 	// setup gui
-	init_GUI();
+	init_gui();
 }
 
-void PreferencesWidget::init_GUI()
+void PreferencesWidget::init_gui()
 {
 	init_control();
 	init_language();

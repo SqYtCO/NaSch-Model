@@ -23,8 +23,8 @@ class ChartWidget : public QWidget
 public:
 	ChartWidget(QWidget* parent = nullptr);
 
-	void set_slow_down_data(const std::size_t& slow_down_chance, const double& avg_speed, const std::size_t& time);
-	void set_car_speed_data(const std::vector< std::pair<std::size_t, std::size_t> >& amount_of_car_at_speed);
+	void set_slow_down_data(std::size_t slow_down_chance, double avg_speed, std::size_t time);
+	void set_car_speed_data(const std::vector<std::size_t>& amount_of_car_at_speed);
 };
 #endif
 

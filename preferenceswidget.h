@@ -16,7 +16,7 @@ class PreferencesWidget : public QFrame
 
 	bool new_game_required;
 
-	void init_GUI();
+	void init_gui();
 	void init_control();
 	void init_language();
 	void init_game();

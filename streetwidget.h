@@ -1,15 +1,22 @@
 #ifndef STREETWIDGET_H
 #define STREETWIDGET_H
 
+#define BASE_CLASS QOpenGLWidget
+//#define BASE_CLASS QGraphicsView
+//#define BASE_CLASS QWidget
+
+#ifdef BASE_CLASS
 #include <QGraphicsView>
+#include <QOpenGLWidget>
+#endif
 #include <QImage>
 
-class StreetWidget : public QWidget
+class StreetWidget : public BASE_CLASS
 {
 	Q_OBJECT
 
 	QPixmap car_image;
-	QColor car_colors[11];
+	std::vector<QColor> car_colors;
 
 	// scale factor
 	double scale;

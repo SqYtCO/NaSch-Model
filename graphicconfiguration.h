@@ -62,7 +62,7 @@ public:
 // get options
 public:
 	inline const Language& get_language() const { return language; }
-	inline const std::size_t& get_cell_size() const { return cell_size; }
+	inline std::size_t get_cell_size() const { return cell_size; }
 	inline const bool& get_diagram_mode() const { return diagram_mode; }
 	inline const bool& get_show_speed_color() const { return show_speed_color; }
 	inline const bool& get_long_street_break() const { return long_street_break; }
@@ -70,12 +70,12 @@ public:
 	inline const bool& get_exit_warning() const { return exit_warning; }
 	inline const bool& get_fullscreen() const { return fullscreen; }
 	inline const bool& get_show_startup_dialog() const { return show_startup_dialog; }
-	inline const std::size_t& get_delay() const { return delay; }
+	inline std::size_t get_delay() const { return delay; }
 
 // set options
 public:
 	inline void set_language(const Language& new_language) { saved = false; language = new_language; }
-	inline void set_cell_size(const std::size_t& new_cell_size) { saved = false; cell_size = new_cell_size; }
+	inline void set_cell_size(std::size_t new_cell_size) { saved = false; cell_size = new_cell_size; }
 	inline void set_diagram_mode(const bool& new_diagram_mode) { saved = false; diagram_mode = new_diagram_mode; }
 	inline void set_show_speed_color(const bool& new_show_speed_color) { saved = false; show_speed_color = new_show_speed_color; }
 	inline void set_long_street_break(const bool& new_long_street_break) { saved = false; long_street_break = new_long_street_break; }
@@ -83,7 +83,7 @@ public:
 	inline void set_exit_warning(const bool& new_exit_warning) { saved = false; exit_warning = new_exit_warning; }
 	inline void set_fullscreen(const bool& new_fullscreen) { saved = false; fullscreen = new_fullscreen; }
 	inline void set_show_startup_dialog(const bool& new_show_startup_dialog) { saved = false; show_startup_dialog = new_show_startup_dialog; write_config(); }
-	inline void set_delay(const std::size_t& new_delay) { saved = false; delay = new_delay; }
+	inline void set_delay(std::size_t new_delay) { saved = false; delay = new_delay; }
 };
 
 #endif // GRAPHICCONFIGURATION_H

@@ -12,7 +12,7 @@ StartupDialog::StartupDialog(QWidget* parent) : QDialog(parent)
 	this->setWindowFlag(Qt::WindowContextHelpButtonHint, false);
 
 	// setup GUI
-	init_GUI();
+	init_gui();
 
 	// load startup dialog preference
 	show_on_startup.setChecked(GraphicCore::get_instance()->get_config()->get_show_startup_dialog());
@@ -42,7 +42,7 @@ void StartupDialog::translate()
 	show_on_startup.setText(tr("Show dialog on startup"));
 }
 
-void StartupDialog::init_GUI()
+void StartupDialog::init_gui()
 {
 	// allow internet and mail links
 	html_welcome.setOpenExternalLinks(true);

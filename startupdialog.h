@@ -28,7 +28,7 @@ class StartupDialog : public QDialog
 	QToolButton close_button;
 
 	// setup GUI
-	void init_GUI();
+	void init_gui();
 
 public:
 	// setup window and connect signals

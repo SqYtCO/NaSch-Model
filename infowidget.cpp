@@ -12,12 +12,12 @@ InfoWidget::InfoWidget(QWidget* parent) : QFrame(parent)
 	this->setFrameShape(QFrame::Panel);
 	this->setLineWidth(2);
 
-	init_GUI();
+	init_gui();
 
 	this->setFocusProxy(nullptr);
 }
 
-void InfoWidget::init_GUI()
+void InfoWidget::init_gui()
 {
 	avg_speed.setAlignment(Qt::AlignCenter);
 	cars.setAlignment(Qt::AlignCenter);

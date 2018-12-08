@@ -29,7 +29,7 @@ class MainWindow : public QMainWindow
 		Help_View = 8,				// 0b01000
 		Info_View = 16				// 0b10000
 	};
-	std::size_t current_view;
+	std::size_t current_view;						// contains currently active view; active views are stored as bitmask
 	PreferencesWidget preferences_view;				// preferences; sliding in on the right side; shortcut: 'P'
 	QPropertyAnimation preferences_animation;		// move-animation of preferences_view
 	ToolWidget tool_view;							// tools; sliding in on the upper side; shortcut: 'T'
@@ -38,8 +38,6 @@ class MainWindow : public QMainWindow
 	QPropertyAnimation help_animation;				// move-animation of help_view
 	InfoWidget info_view;
 	QPropertyAnimation info_animation;
-
-					// contains currently active view; active views are stored as bitmask
 
 	const std::size_t ANIMATION_TIME = 1000;		// time for animations in ms
 	void show_Street_View();							// hide preferences_view and help_view
@@ -52,7 +50,7 @@ class MainWindow : public QMainWindow
 	void show_info_view();
 	void hide_info_view();
 
-	void init_GUI();								// setup GUI; hide all views except Street_View
+	void init_gui();								// setup GUI; hide all views except Street_View
 
 	QTranslator translator;							// translator for custom translation file (gol_XX.qm; XX=language)
 	QTranslator qt_translator;						// translator for qt standard translation (qtbase_XX.qm; XX=language)

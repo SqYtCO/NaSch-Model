@@ -9,7 +9,7 @@
 #include <chrono>
 #endif
 
-StreetWidget::StreetWidget(QWidget* parent) : QWidget(parent), car_image(":/images/car-200.png"),
+StreetWidget::StreetWidget(QWidget* parent) : BASE_CLASS(parent), car_image(":/images/car-200.png"),
 												car_colors{ Qt::blue, Qt::green, Qt::gray, Qt::yellow, Qt::darkMagenta, Qt::darkGreen, Qt::cyan, Qt::darkCyan, Qt::darkYellow,
 														   Qt::darkGray, Qt::black },
 												scale(1), move_x(0), move_y(0)
@@ -149,6 +149,11 @@ void StreetWidget::keyPressEvent(QKeyEvent* event)
 		else
 			move_x -= 10;
 	}
+	else if(event->modifiers() & Qt::CTRL && event->key() == Qt::Key_Plus)
+		scale *= 1.1;
+	else if(event->modifiers() & Qt::CTRL && event->key() == Qt::Key_Minus)
+		scale *= 0.9;
+
 
 	update();
 
@@ -190,7 +195,8 @@ void StreetWidget::mousePressEvent(QMouseEvent* event)
 		if(Core::get_instance()->is_car_at(pos, lane))
 			Core::get_instance()->remove_car(pos, lane);
 		else
-			Core::get_instance()->add_car(Core::get_instance()->get_max_speed(), pos, lane);
+		//	Core::get_instance()->add_car(Core::get_instance()->get_max_speed(), pos, lane);
+			Core::get_instance()->add_car(0, pos, lane);
 	}
 	else if(GraphicCore::get_instance()->get_run_config()->get_tool() == Tool::Slow_Down_Tool)
 	{

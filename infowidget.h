@@ -9,7 +9,7 @@ class InfoWidget : public QFrame
 {
 	QGridLayout main_layout;
 
-	void init_GUI();
+	void init_gui();
 
 public:
 	InfoWidget(QWidget* parent = nullptr);
