@@ -80,7 +80,7 @@ void PreferencesWidget::init_language()
 	english_button.setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 	QObject::connect(&english_button, &QToolButton::clicked, [this]()
 	{
-		GraphicCore::get_instance()->get_config()->set_language(Language::English);
+		GraphicCore::get_config()->set_language(Language::English);
 		emit language_changed();
 	});
 
@@ -89,7 +89,7 @@ void PreferencesWidget::init_language()
 	german_button.setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 	QObject::connect(&german_button, &QToolButton::clicked, [this]()
 	{
-		GraphicCore::get_instance()->get_config()->set_language(Language::German);
+		GraphicCore::get_config()->set_language(Language::German);
 		emit language_changed();
 	});
 
@@ -102,26 +102,26 @@ void PreferencesWidget::init_game()
 {
 	length_input.setMinimum(1);
 	length_input.setMaximum(10000);
-	QObject::connect(&length_input, &QSpinBox::editingFinished, [this]() { Core::get_instance()->get_config()->set_street_length(length_input.value()); });
+	QObject::connect(&length_input, &QSpinBox::editingFinished, [this]() { Core::get_config()->set_street_length(length_input.value()); });
 	lanes_input.setMinimum(1);
 	lanes_input.setMaximum(10000);
-	QObject::connect(&lanes_input, &QSpinBox::editingFinished, [this]() { Core::get_instance()->get_config()->set_street_lanes(lanes_input.value()); });
+	QObject::connect(&lanes_input, &QSpinBox::editingFinished, [this]() { Core::get_config()->set_street_lanes(lanes_input.value()); });
 
 	car_density_input.setMinimum(0);
 	car_density_input.setMaximum(100);
-	QObject::connect(&car_density_input, &QSpinBox::editingFinished, [this]() { Core::get_instance()->get_config()->set_car_density(car_density_input.value()); });
+	QObject::connect(&car_density_input, &QSpinBox::editingFinished, [this]() { Core::get_config()->set_car_density(car_density_input.value()); });
 
 	slow_down_chance_input.setMinimum(0);
 	slow_down_chance_input.setMaximum(100);
-	QObject::connect(&slow_down_chance_input, &QSpinBox::editingFinished, [this]() { Core::get_instance()->get_config()->set_slow_down_chance(slow_down_chance_input.value()); });
+	QObject::connect(&slow_down_chance_input, &QSpinBox::editingFinished, [this]() { Core::get_config()->set_slow_down_chance(slow_down_chance_input.value()); });
 
 	max_speed_input.setMinimum(1);
 	max_speed_input.setMaximum(1000);
-	QObject::connect(&max_speed_input, &QSpinBox::editingFinished, [this]() { Core::get_instance()->get_config()->set_max_speed(max_speed_input.value()); });
+	QObject::connect(&max_speed_input, &QSpinBox::editingFinished, [this]() { Core::get_config()->set_max_speed(max_speed_input.value()); });
 
 	delay_input.setMinimum(1);
 	delay_input.setMaximum(60000);
-	QObject::connect(&delay_input, &QSpinBox::editingFinished, [this]() { GraphicCore::get_instance()->get_config()->set_delay(delay_input.value()); });
+	QObject::connect(&delay_input, &QSpinBox::editingFinished, [this]() { GraphicCore::get_config()->set_delay(delay_input.value()); });
 
 	game_layout.addWidget(&length_text, 0, 0);
 	game_layout.addWidget(&length_input, 0, 1);
@@ -143,30 +143,30 @@ void PreferencesWidget::init_appearance()
 {
 	QObject::connect(&break_long_streets_input, &QCheckBox::clicked, [this]()
 	{
-		GraphicCore::get_instance()->get_config()->set_long_street_break(break_long_streets_input.isChecked());
-		GraphicCore::get_instance()->update();
+		GraphicCore::get_config()->set_long_street_break(break_long_streets_input.isChecked());
+		GraphicCore::update();
 	});
 
 	QObject::connect(&show_speed_color_input, &QCheckBox::clicked, [this]()
 	{
-		GraphicCore::get_instance()->get_config()->set_show_speed_color(show_speed_color_input.isChecked());
-		GraphicCore::get_instance()->update();
+		GraphicCore::get_config()->set_show_speed_color(show_speed_color_input.isChecked());
+		GraphicCore::update();
 	});
 
 	QObject::connect(&show_cars_input, &QCheckBox::clicked, [this]()
 	{
-		GraphicCore::get_instance()->get_config()->set_show_cars(show_cars_input.isChecked());
-		GraphicCore::get_instance()->update();
+		GraphicCore::get_config()->set_show_cars(show_cars_input.isChecked());
+		GraphicCore::update();
 	});
 
 	QObject::connect(&exit_warning_input, &QCheckBox::clicked, [this]()
 	{
-		GraphicCore::get_instance()->get_config()->set_exit_warning(exit_warning_input.isChecked());
+		GraphicCore::get_config()->set_exit_warning(exit_warning_input.isChecked());
 	});
 
 	QObject::connect(&fullscreen_input, &QCheckBox::clicked, [this]()
 	{
-		GraphicCore::get_instance()->get_config()->set_fullscreen(fullscreen_input.isChecked());
+		GraphicCore::get_config()->set_fullscreen(fullscreen_input.isChecked());
 	});
 
 	appearance_layout.addWidget(&break_long_streets_input, 0, 0);
@@ -196,38 +196,38 @@ void PreferencesWidget::translate()
 
 void PreferencesWidget::load_values()
 {
-	length_input.setValue(Core::get_instance()->get_config()->get_street_length());
-	lanes_input.setValue(Core::get_instance()->get_config()->get_street_lanes());
-	car_density_input.setValue(Core::get_instance()->get_config()->get_car_density());
-	slow_down_chance_input.setValue(Core::get_instance()->get_config()->get_slow_down_chance());
-	max_speed_input.setValue(Core::get_instance()->get_config()->get_max_speed());
-	delay_input.setValue(GraphicCore::get_instance()->get_config()->get_delay());
+	length_input.setValue(Core::get_config()->get_street_length());
+	lanes_input.setValue(Core::get_config()->get_street_lanes());
+	car_density_input.setValue(Core::get_config()->get_car_density());
+	slow_down_chance_input.setValue(Core::get_config()->get_slow_down_chance());
+	max_speed_input.setValue(Core::get_config()->get_max_speed());
+	delay_input.setValue(GraphicCore::get_config()->get_delay());
 
-	break_long_streets_input.setChecked(GraphicCore::get_instance()->get_config()->get_long_street_break());
-	show_speed_color_input.setChecked(GraphicCore::get_instance()->get_config()->get_show_speed_color());
-	show_cars_input.setChecked(GraphicCore::get_instance()->get_config()->get_show_cars());
-	exit_warning_input.setChecked(GraphicCore::get_instance()->get_config()->get_exit_warning());
-	fullscreen_input.setChecked(GraphicCore::get_instance()->get_config()->get_fullscreen());
+	break_long_streets_input.setChecked(GraphicCore::get_config()->get_long_street_break());
+	show_speed_color_input.setChecked(GraphicCore::get_config()->get_show_speed_color());
+	show_cars_input.setChecked(GraphicCore::get_config()->get_show_cars());
+	exit_warning_input.setChecked(GraphicCore::get_config()->get_exit_warning());
+	fullscreen_input.setChecked(GraphicCore::get_config()->get_fullscreen());
 }
 
 void PreferencesWidget::apply()
 {
 	// if writing config fails
-	if(!(Core::get_instance()->get_config()->write_config() && GraphicCore::get_instance()->get_config()->write_config()))
+	if(!(Core::get_config()->write_config() && GraphicCore::get_config()->write_config()))
 		QMessageBox::warning(this, tr("Write Error"), tr("Writing Configuration Failed!\nPlease Check Your Permissions."));
 
-	GraphicCore::get_instance()->update();
+	GraphicCore::update();
 }
 
 void PreferencesWidget::discard()
 {
 	// read in saved preferences again
-	Core::get_instance()->get_config()->read_config();
-	GraphicCore::get_instance()->get_config()->read_config();
+	Core::get_config()->read_config();
+	GraphicCore::get_config()->read_config();
 
 	// update GUI
 	load_values();
-	GraphicCore::get_instance()->update();
+	GraphicCore::update();
 }
 
 void PreferencesWidget::reset()
@@ -238,8 +238,8 @@ void PreferencesWidget::reset()
 		return;
 
 	// set config to default
-	Core::get_instance()->get_config()->reset_config();
-	GraphicCore::get_instance()->get_config()->reset_config();
+	Core::get_config()->reset_config();
+	GraphicCore::get_config()->reset_config();
 	// update values in preferences view
 	load_values();
 

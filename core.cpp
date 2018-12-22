@@ -1,18 +1,10 @@
 #include "core.h"
 
-Core::Core() : system(config.get_street_length(), config.get_street_lanes(), config.get_car_density(), config.get_max_speed(), config.get_slow_down_chance()), time(0)
-{
+Configuration Core::config;
+Car_System Core::system;
+std::size_t Core::time;
 
-}
-
-Core* Core::get_instance()
-{
-	static Core core;
-
-	return &core;
-}
-
-bool Core::save(std::string file)
+bool Core::save(const std::string& file)
 {
 	if(file == "hi")
 		;

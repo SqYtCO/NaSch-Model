@@ -6,10 +6,12 @@ constexpr const std::size_t Car_System::SLOW_DOWN_BIT;
 constexpr const std::size_t Car_System::EMPTY;
 constexpr const std::size_t Car_System::BARRIER;
 
-Car_System::Car_System(std::size_t length, std::size_t lanes, std::size_t car_density,
-					   std::size_t max_speed, std::size_t slow_down_chance) : system(length * lanes), car_id(1), length(length), lanes(lanes),
-																							car_density(car_density), max_speed(max_speed),
-																							slow_down_chance(slow_down_chance)
+Car_System::Car_System()
+{
+	create(0, 0, 0, 0, 0);
+}
+
+Car_System::Car_System(std::size_t length, std::size_t lanes, std::size_t car_density, std::size_t max_speed, std::size_t slow_down_chance)
 {
 	create(length, lanes, car_density, max_speed, slow_down_chance);
 }
@@ -47,11 +49,14 @@ void Car_System::calculate()
 
 			for(std::size_t i = 1; i <= speed; ++i)
 				if(is_slow_down_at(pos + i, lane))
-					--speed | (is_slow_down_at(pos, lane) ? SLOW_DOWN_BIT : 0);
+				{
+					--speed;
+					speed |= (is_slow_down_at(pos, lane) ? SLOW_DOWN_BIT : 0);
+				}
 
 			system[pos + lane * length] = speed;
 
-			//	if(Core::get_instance()->get_config()->get_lane_rules())
+			//	if(Core::get_config()->get_lane_rules())
 		}
 	}
 }
@@ -152,11 +157,9 @@ void Car_System::remove_slow_down(std::size_t pos, std::size_t lane)
 	system[pos + lane * length] = clear_slow_down_bit(system[pos + lane * length]);
 }
 
-double Car_System::get_avg_speed()
+double Car_System::get_avg_speed(std::size_t lane)
 {
-	std::size_t avg_speed = 0;
-	std::size_t cars = 0;
-	for(std::size_t lane = 0; lane < lanes; ++lane)
+	auto sum_lane = [this](std::size_t lane, std::size_t& avg_speed, std::size_t& cars)
 	{
 		for(std::size_t pos = 0; pos < length; ++pos)
 		{
@@ -167,9 +170,16 @@ double Car_System::get_avg_speed()
 			avg_speed += system[pos + lane * length];
 			++cars;
 		}
-	}
+	};
+	std::size_t avg_speed = 0;
+	std::size_t cars = 0;
+	if(lane == std::numeric_limits<std::size_t>::max())
+		for(lane = 0; lane < lanes; ++lane)
+			sum_lane(lane, avg_speed, cars);
+	else
+		sum_lane(lane, avg_speed, cars);
 
-	return (static_cast<double>(avg_speed) / cars);
+	return (cars != 0) ? (static_cast<double>(avg_speed) / cars) : 0;
 }
 
 std::size_t Car_System::get_car_amount()

@@ -1,9 +1,9 @@
 #ifndef STREETWIDGET_H
 #define STREETWIDGET_H
 
-#define BASE_CLASS QOpenGLWidget
+//#define BASE_CLASS QOpenGLWidget
 //#define BASE_CLASS QGraphicsView
-//#define BASE_CLASS QWidget
+#define BASE_CLASS QWidget
 
 #ifdef BASE_CLASS
 #include <QGraphicsView>
@@ -27,6 +27,7 @@ class StreetWidget : public BASE_CLASS
 
 public:
 	StreetWidget(QWidget* parent = nullptr);
+	virtual ~StreetWidget() override;
 
 	void reset_position();
 
@@ -41,10 +42,10 @@ signals:
 	void data_changed();
 
 protected:
-	void paintEvent(QPaintEvent*);
-	void keyPressEvent(QKeyEvent* event);
-	void wheelEvent(QWheelEvent* event);
-	void mousePressEvent(QMouseEvent* event);
+	virtual void paintEvent(QPaintEvent*) override;
+	virtual void keyPressEvent(QKeyEvent* event) override;
+	virtual void wheelEvent(QWheelEvent* event) override;
+	virtual void mousePressEvent(QMouseEvent* event) override;
 };
 
 #endif // STREETWIDGET_H

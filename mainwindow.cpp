@@ -9,22 +9,19 @@
 #include <QFileDialog>
 #include <QKeyEvent>
 
-#define TOOL_VIEW_TOP_HIDE_POINT QPoint(GraphicCore::get_instance()->get_street()->x(), GraphicCore::get_instance()->get_street()->y())
-#define TOOL_VIEW_TOP_SHOW_POINT QPoint(GraphicCore::get_instance()->get_street()->x(), GraphicCore::get_instance()->get_street()->y())
-#define TOOL_VIEW_BOTTOM_HIDE_POINT QPoint(GraphicCore::get_instance()->get_street()->x(), GraphicCore::get_instance()->get_street()->y() + GraphicCore::get_instance()->get_street()->height())
-#define TOOL_VIEW_BOTTOM_SHOW_POINT QPoint(GraphicCore::get_instance()->get_street()->x(), GraphicCore::get_instance()->get_street()->y() + GraphicCore::get_instance()->get_street()->height() - tool_view.height())
-#define TOOL_VIEW_HIDE_POINT TOOL_VIEW_BOTTOM_HIDE_POINT
-#define TOOL_VIEW_SHOW_POINT TOOL_VIEW_BOTTOM_SHOW_POINT
+#define TOOL_VIEW_TOP_HIDE_POINT QPoint(street_view.x(), street_view.y() - tool_view.height())
+#define TOOL_VIEW_TOP_SHOW_POINT QPoint(street_view.x(), street_view.y())
+#define TOOL_VIEW_BOTTOM_HIDE_POINT QPoint(street_view.x(), street_view.y() + street_view.height())
+#define TOOL_VIEW_BOTTOM_SHOW_POINT QPoint(street_view.x(), street_view.y() + street_view.height() - tool_view.height())
+#define TOOL_VIEW_HIDE_POINT TOOL_VIEW_TOP_HIDE_POINT
+#define TOOL_VIEW_SHOW_POINT TOOL_VIEW_TOP_SHOW_POINT
 
 MainWindow::MainWindow(const char* start_file, QWidget* parent) : QMainWindow(parent),
-											preferences_view(this), preferences_animation(&preferences_view, "pos"),
+											preferences_view((GraphicCore::init_gui(&street_view, &chart_view), this)), preferences_animation(&preferences_view, "pos"),
 											tool_view(this), tool_animation(&tool_view, "pos"),
 											help_view(this), help_animation(&help_view, "pos"),
 											info_view(this), info_animation(&info_view, "pos")
 {
-	if(start_file != nullptr)
-		GraphicCore::get_instance()->load(start_file);
-
 	// setup GUI and set current active view
 	init_gui();
 	current_view = Street_View;
@@ -32,7 +29,7 @@ MainWindow::MainWindow(const char* start_file, QWidget* parent) : QMainWindow(pa
 	// set minimum size
 	this->setMinimumSize(MIN_WIDTH, MIN_HEIGHT);
 
-	this->setFocusProxy(GraphicCore::get_instance()->get_street());
+	this->setFocusProxy(&street_view);
 	this->setFocus();
 
 	// setup resize_timer; this timer fixes a resize bug when switching to fullscreen mode
@@ -53,10 +50,15 @@ MainWindow::MainWindow(const char* start_file, QWidget* parent) : QMainWindow(pa
 		else
 			showFullScreen();
 	});
-	QObject::connect(GraphicCore::get_instance()->get_street(), &StreetWidget::data_changed, &tool_view, &ToolWidget::update_data);
-	QObject::connect(GraphicCore::get_instance()->get_street(), &StreetWidget::data_changed, &info_view, &InfoWidget::update_data);
+	QObject::connect(&street_view, &StreetWidget::data_changed, &tool_view, &ToolWidget::update_data);
+	QObject::connect(&street_view, &StreetWidget::data_changed, &info_view, &InfoWidget::update_data);
 
 	translate_application();
+
+	if(start_file != nullptr)
+		GraphicCore::load(start_file);
+	else
+		GraphicCore::new_game();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
@@ -68,7 +70,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 			hide_preference_view();
 		else
 		{
-			GraphicCore::get_instance()->stop();
+			GraphicCore::stop();
 			show_preference_view();
 		}
 	}
@@ -79,7 +81,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 			hide_help_view();
 		else
 		{
-			GraphicCore::get_instance()->stop();
+			GraphicCore::stop();
 			show_help_view();
 		}
 	}
@@ -112,7 +114,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 	{
 		QString file = QFileDialog::getOpenFileName();
 		if(!file.isEmpty())
-			GraphicCore::get_instance()->load(file);
+			GraphicCore::load(file);
 	}
 	// save only if neither preferences nor help view are active
 	else if(event->key() == Qt::Key_S && !(current_view & (Preferences_View | Help_View)))
@@ -121,10 +123,10 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 		{
 			QString file = QFileDialog::getSaveFileName();
 			if(!file.isEmpty())
-				GraphicCore::get_instance()->save(file);
+				GraphicCore::save(file);
 		}
 		else
-			GraphicCore::get_instance()->save();
+			GraphicCore::save();
 	}
 	else if(event->key() == Qt::Key_F)
 	{
@@ -138,10 +140,10 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 #ifdef CREATE_CHARTS
 	else if(event->key() == Qt::Key_C)
 	{
-		if(GraphicCore::get_instance()->get_chart()->isVisible())
-			GraphicCore::get_instance()->get_chart()->close();
+		if(chart_view.isVisible())
+			chart_view.close();
 		else
-			GraphicCore::get_instance()->get_chart()->show();
+			chart_view.show();
 	}
 #endif
 }
@@ -153,13 +155,13 @@ void MainWindow::resizeEvent(QResizeEvent*)
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-	GraphicCore::get_instance()->stop();
+	GraphicCore::stop();
 #ifdef CREATE_CHARTS
-	GraphicCore::get_instance()->get_chart()->close();
+	chart_view.close();
 #endif
 
 	// if any preference is not saved, show question; this question is necessary if the user is in the preferences view and tries to close the window
-	if(!(Core::get_instance()->get_config()->is_saved() && GraphicCore::get_instance()->get_config()->is_saved()))
+	if(!(Core::get_config()->is_saved() && GraphicCore::get_config()->is_saved()))
 	{
 		QMessageBox::StandardButton preferences_save_answer = QMessageBox::question(this, tr("Save Preferences?"), tr("Save changed preferences?"),
 																					QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
@@ -175,7 +177,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 		}
 	}
 
-	if(GraphicCore::get_instance()->get_config()->get_exit_warning())
+	if(GraphicCore::get_config()->get_exit_warning())
 	{
 		QMessageBox::StandardButton quit_answer = QMessageBox::question(this, tr("Save Game?"), tr("Save current game?"),
 																		QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
@@ -186,7 +188,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 		}
 		else if(quit_answer == QMessageBox::Save)
 		{
-			GraphicCore::get_instance()->save();
+			GraphicCore::save();
 			event->accept();
 		}
 		else
@@ -199,12 +201,12 @@ void MainWindow::closeEvent(QCloseEvent* event)
 void MainWindow::show()
 {
 	// read fullscreen preference and start in set mode
-	if(GraphicCore::get_instance()->get_config()->get_fullscreen())
+	if(GraphicCore::get_config()->get_fullscreen())
 		this->showFullScreen();
 	else
 		this->showMaximized();
 
-	if(GraphicCore::get_instance()->get_config()->get_show_startup_dialog())
+	if(GraphicCore::get_config()->get_show_startup_dialog())
 	{
 		StartupDialog dialog;
 		// connect dialog signal
@@ -218,7 +220,7 @@ void MainWindow::show()
 void MainWindow::init_gui()
 {
 	// set central widget
-	setCentralWidget(GraphicCore::get_instance()->get_street());
+	setCentralWidget(&street_view);
 
 	// set z axis order
 	info_view.raise();
@@ -229,8 +231,8 @@ void MainWindow::init_gui()
 
 void MainWindow::translate_application()
 {
-	if(GraphicCore::get_instance()->get_config()->get_language() == Language::German ||
-			(GraphicCore::get_instance()->get_config()->get_language() == Language::System && QLocale::system().language() == QLocale::German))
+	if(GraphicCore::get_config()->get_language() == Language::German ||
+			(GraphicCore::get_config()->get_language() == Language::System && QLocale::system().language() == QLocale::German))
 	{
 		if(!translator.load(":/translations/gol_de"))
 			qDebug("No DE translation found!");
@@ -267,7 +269,7 @@ void MainWindow::update_views_geometry()
 		// show
 		show_preference_view();
 		if(!(current_view & Help_View))
-			help_view.move(-help_view.width(), GraphicCore::get_instance()->get_street()->y());
+			help_view.move(-help_view.width(), street_view.y());
 		tool_view.move(TOOL_VIEW_HIDE_POINT);
 		info_view.move(width() - info_view.width(), height());
 	}
@@ -275,27 +277,27 @@ void MainWindow::update_views_geometry()
 	{
 		show_help_view();
 		if(!(current_view & Preferences_View))
-			preferences_view.move(width(), GraphicCore::get_instance()->get_street()->y());
+			preferences_view.move(width(), street_view.y());
 		tool_view.move(TOOL_VIEW_HIDE_POINT);
 		info_view.move(width() - info_view.width(), height());
 	}
 	else if(current_view & Tool_View)
 	{
 		show_tool_view();
-		preferences_view.move(width(), GraphicCore::get_instance()->get_street()->y());
-		help_view.move(-help_view.width(), GraphicCore::get_instance()->get_street()->y());
+		preferences_view.move(width(), street_view.y());
+		help_view.move(-help_view.width(), street_view.y());
 	}
 	else if(current_view & Info_View)
 	{
 		show_info_view();
-		preferences_view.move(width(), GraphicCore::get_instance()->get_street()->y());
-		help_view.move(-help_view.width(), GraphicCore::get_instance()->get_street()->y());
+		preferences_view.move(width(), street_view.y());
+		help_view.move(-help_view.width(), street_view.y());
 		tool_view.move(TOOL_VIEW_HIDE_POINT);
 	}
 	else
 	{
-		preferences_view.move(width(), GraphicCore::get_instance()->get_street()->y());
-		help_view.move(-help_view.width(), GraphicCore::get_instance()->get_street()->y());
+		preferences_view.move(width(), street_view.y());
+		help_view.move(-help_view.width(), street_view.y());
 		tool_view.move(TOOL_VIEW_HIDE_POINT);
 		info_view.move(width() - info_view.width(), height());
 	}
@@ -337,7 +339,7 @@ void MainWindow::show_preference_view()
 	if(current_view & Help_View)
 	{
 		preferences_animation.setStartValue(preferences_view.pos());
-		preferences_animation.setEndValue(QPoint(help_view.width(), GraphicCore::get_instance()->get_street()->y()));
+		preferences_animation.setEndValue(QPoint(help_view.width(), street_view.y()));
 		preferences_animation.setDuration(ANIMATION_TIME);
 		preferences_animation.stop();
 		preferences_animation.start();
@@ -345,7 +347,7 @@ void MainWindow::show_preference_view()
 	else
 	{
 		preferences_animation.setStartValue(preferences_view.pos());
-		preferences_animation.setEndValue(QPoint(width() - preferences_view.width(), GraphicCore::get_instance()->get_street()->y()));
+		preferences_animation.setEndValue(QPoint(width() - preferences_view.width(), street_view.y()));
 		preferences_animation.setDuration(ANIMATION_TIME);
 		preferences_animation.stop();
 		preferences_animation.start();
@@ -360,7 +362,7 @@ void MainWindow::show_preference_view()
 void MainWindow::hide_preference_view()
 {
 	// if any preference is not saved, show question
-	if(!(Core::get_instance()->get_config()->is_saved() && GraphicCore::get_instance()->get_config()->is_saved()))
+	if(!(Core::get_config()->is_saved() && GraphicCore::get_config()->is_saved()))
 	{
 		QMessageBox::StandardButton preferences_save_answer = QMessageBox::question(this, tr("Save Preferences?"), tr("Save changed preferences?"),
 																					QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
@@ -380,7 +382,7 @@ void MainWindow::hide_preference_view()
 		show_info_view();
 
 	preferences_animation.setStartValue(preferences_view.pos());
-	preferences_animation.setEndValue(QPoint(width(), GraphicCore::get_instance()->get_street()->y()));
+	preferences_animation.setEndValue(QPoint(width(), street_view.y()));
 	preferences_animation.setDuration(ANIMATION_TIME);
 	preferences_animation.stop();
 	preferences_animation.start();
@@ -443,14 +445,14 @@ void MainWindow::show_help_view()
 	{
 		// reduce preferences view
 		preferences_animation.setStartValue(preferences_view.pos());
-		preferences_animation.setEndValue(QPoint(help_view.width(), GraphicCore::get_instance()->get_street()->y()));
+		preferences_animation.setEndValue(QPoint(help_view.width(), street_view.y()));
 		preferences_animation.setDuration(ANIMATION_TIME);
 		preferences_animation.stop();
 		preferences_animation.start();
 	}
 
 	help_animation.setStartValue(help_view.pos());
-	help_animation.setEndValue(QPoint(GraphicCore::get_instance()->get_street()->x(), GraphicCore::get_instance()->get_street()->y()));
+	help_animation.setEndValue(QPoint(street_view.x(), street_view.y()));
 	help_animation.setDuration(ANIMATION_TIME);
 	help_animation.stop();
 	help_animation.start();
@@ -467,7 +469,7 @@ void MainWindow::hide_help_view()
 	{
 		// extend preferences view
 		preferences_animation.setStartValue(preferences_view.pos());
-		preferences_animation.setEndValue(QPoint(width() - preferences_view.width(), GraphicCore::get_instance()->get_street()->y()));
+		preferences_animation.setEndValue(QPoint(width() - preferences_view.width(), street_view.y()));
 		preferences_animation.setDuration(ANIMATION_TIME);
 		preferences_animation.stop();
 		preferences_animation.start();
@@ -477,7 +479,7 @@ void MainWindow::hide_help_view()
 		show_tool_view();
 
 	help_animation.setStartValue(help_view.pos());
-	help_animation.setEndValue(QPoint(-help_view.width(), GraphicCore::get_instance()->get_street()->y()));
+	help_animation.setEndValue(QPoint(-help_view.width(), street_view.y()));
 	help_animation.setDuration(ANIMATION_TIME);
 	help_animation.stop();
 	help_animation.start();

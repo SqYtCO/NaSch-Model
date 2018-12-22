@@ -50,8 +50,8 @@ void HelpWidget::translate()
 	show_index.setToolTip(tr("Show Index"));
 
 	// load help text in the right language
-	if(GraphicCore::get_instance()->get_config()->get_language() == Language::German ||
-			(GraphicCore::get_instance()->get_config()->get_language() == Language::System && QLocale::system().language() == QLocale::German))
+	if(GraphicCore::get_config()->get_language() == Language::German ||
+			(GraphicCore::get_config()->get_language() == Language::System && QLocale::system().language() == QLocale::German))
 		html_help.setSource(QUrl("qrc:/info/de_help.html"));
 	else
 		html_help.setSource(QUrl("qrc:/info/en_help.html"));

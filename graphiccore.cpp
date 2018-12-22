@@ -5,41 +5,41 @@
 #include <chrono>
 #endif
 
-GraphicCore::GraphicCore() : street(new StreetWidget(&parent)), run_thread(nullptr)
+GraphicConfiguration GraphicCore::config;
+Running_Configuration GraphicCore::run_config;
+StreetWidget* GraphicCore::street;
+ChartWidget* GraphicCore::chart;
+std::mutex GraphicCore::sync_mutex;
+std::unique_ptr<std::thread> GraphicCore::run_thread;
+std::atomic_bool GraphicCore::stop_thread;
+bool GraphicCore::block_thread;
+
+void GraphicCore::init()
 {
-#ifdef CREATE_CHARTS
-	chart = new ChartWidget();
-#endif
+	street = nullptr;
+	chart = nullptr;
+	run_thread.reset();
 }
 
-GraphicCore::~GraphicCore()
+void GraphicCore::init_gui(StreetWidget* street, ChartWidget* chart)
 {
-	if(run_thread)
-	{
-		run_thread->join();
-		delete run_thread;
-	}
-}
-
-GraphicCore* GraphicCore::get_instance()
-{
-	static GraphicCore gcore;
-
-	return &gcore;
+	GraphicCore::street = street;
+	GraphicCore::chart = chart;
 }
 
 void GraphicCore::new_game()
 {
 	stop();
-	Core::get_instance()->new_game();
+	Core::new_game();
 	street->update_data();
 	street->update();
+	add_chart_point();
 }
 
 void GraphicCore::reset()
 {
 	stop();
-	Core::get_instance()->reset();
+	Core::reset();
 	street->update();
 }
 
@@ -48,7 +48,18 @@ void GraphicCore::start()
 	stop_thread = false;
 
 	if(!run_thread)
-		run_thread = new std::thread(&GraphicCore::run, this);
+		run_thread.reset(new std::thread([]()
+		{
+			while(!stop_thread)
+			{
+				sync_mutex.lock();
+				Core::step();
+				sync_mutex.unlock();
+				street->update_data();
+				street->update();
+				std::this_thread::sleep_for(std::chrono::milliseconds(config.get_delay()));
+			}
+		}));
 }
 
 void GraphicCore::stop()
@@ -58,8 +69,7 @@ void GraphicCore::stop()
 	if(run_thread)
 	{
 		run_thread->join();
-		delete run_thread;
-		run_thread = nullptr;
+		run_thread.reset();
 	}
 }
 
@@ -70,27 +80,13 @@ void GraphicCore::step()
 #ifdef ENABLE_CALC_TIME_MEASUREMENT
 	auto begin = std::chrono::high_resolution_clock::now();
 #endif
-	Core::get_instance()->step();
+	sync_mutex.lock();
+	Core::step();
+	sync_mutex.unlock();
 	street->update_data();
 	street->update();
 
-#ifdef CREATE_CHARTS
-	chart->set_slow_down_data(Core::get_instance()->get_slow_down_chance(), Core::get_instance()->get_avg_speed(), Core::get_instance()->get_time());
-
-	std::vector<std::size_t> speeds(Core::get_instance()->get_max_speed() + 1, 0);
-	for(std::size_t lane = 0; lane < Core::get_instance()->get_lanes(); ++lane)
-	{
-		for(std::size_t pos = 0; pos < Core::get_instance()->get_length(); ++pos)
-		{
-			long speed = Core::get_instance()->get_speed(pos, lane);
-			if(speed < 0 || speed > Core::get_instance()->get_max_speed())
-				continue;
-
-			++speeds[speed];
-		}
-	}
-	chart->set_car_speed_data(speeds);
-#endif
+	add_chart_point();
 
 #ifdef ENABLE_CALC_TIME_MEASUREMENT
 	auto end = std::chrono::high_resolution_clock::now();
@@ -98,14 +94,25 @@ void GraphicCore::step()
 #endif
 }
 
-void GraphicCore::run()
+void GraphicCore::add_chart_point()
 {
-	while(!stop_thread)
+	if(chart)
 	{
-		Core::get_instance()->step();
-		street->update_data();
-		street->update();
-		std::this_thread::sleep_for(std::chrono::milliseconds(config.get_delay()));
+		chart->set_slow_down_data(Core::get_slow_down_chance(), Core::get_avg_speed(), Core::get_time());
+
+		std::vector<std::size_t> speeds(Core::get_max_speed() + 1, 0);
+		for(std::size_t lane = 0; lane < Core::get_lanes(); ++lane)
+		{
+			for(std::size_t pos = 0; pos < Core::get_length(); ++pos)
+			{
+				long speed = Core::get_speed(pos, lane);
+				if(speed < 0 || speed > Core::get_max_speed())
+					continue;
+
+				++speeds[speed];
+			}
+		}
+		chart->set_car_speed_data(speeds);
 	}
 }
 

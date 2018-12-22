@@ -96,32 +96,32 @@ void ToolWidget::init_control_buttons()
 void ToolWidget::init_tool_buttons()
 {
 	car_tool.setDown(true);
-	QObject::connect(&car_tool, &QToolButton::clicked, [this]() { GraphicCore::get_instance()->get_run_config()->set_tool(Car_Tool); });
-	QObject::connect(&speed_tool, &QToolButton::clicked, [this]() { GraphicCore::get_instance()->get_run_config()->set_tool(Speed_Tool); });
-	QObject::connect(&barrier_tool, &QToolButton::clicked, [this]() { GraphicCore::get_instance()->get_run_config()->set_tool(Barrier_Tool); });
-	QObject::connect(&slow_down_tool, &QToolButton::clicked, [this]() { GraphicCore::get_instance()->get_run_config()->set_tool(Slow_Down_Tool); });
+	QObject::connect(&car_tool, &QToolButton::clicked, [this]() { GraphicCore::get_run_config()->set_tool(Car_Tool); });
+	QObject::connect(&speed_tool, &QToolButton::clicked, [this]() { GraphicCore::get_run_config()->set_tool(Speed_Tool); });
+	QObject::connect(&barrier_tool, &QToolButton::clicked, [this]() { GraphicCore::get_run_config()->set_tool(Barrier_Tool); });
+	QObject::connect(&slow_down_tool, &QToolButton::clicked, [this]() { GraphicCore::get_run_config()->set_tool(Slow_Down_Tool); });
 }
 
 void ToolWidget::init_buttons()
 {
 	// connect save button; text will be set in translate()
-	QObject::connect(&save, &QToolButton::clicked, []() { GraphicCore::get_instance()->save(); });
+	QObject::connect(&save, &QToolButton::clicked, []() { GraphicCore::save(); });
 
 	// connect open button; text will be set in translate()
 	QObject::connect(&open, &QToolButton::clicked, []()
 	{
 		QString file = QFileDialog::getOpenFileName();
 		if(!file.isEmpty())
-			GraphicCore::get_instance()->load(file);
+			GraphicCore::load(file);
 	});
 
 	// init new button
-	QObject::connect(&new_game, &QToolButton::clicked, [this]() { GraphicCore::get_instance()->new_game(); update_data(); });
+	QObject::connect(&new_game, &QToolButton::clicked, [this]() { GraphicCore::new_game(); update_data(); });
 
 	// init clear button: on click all cells will be dead; on click + CTRL all cells will be alive
 	QObject::connect(&clear_all, &QToolButton::clicked, [this]()
 	{
-		GraphicCore::get_instance()->reset();
+		GraphicCore::reset();
 		update_data();
 	});
 
@@ -130,11 +130,11 @@ void ToolWidget::init_buttons()
 	QObject::connect(&play_stop, &QToolButton::clicked, this, &ToolWidget::play_or_stop);
 
 	// init reset_position; text will be set in translate()
-	QObject::connect(&reset_position, &QToolButton::clicked, []() { GraphicCore::get_instance()->reset_position(); } );
+	QObject::connect(&reset_position, &QToolButton::clicked, []() { GraphicCore::reset_position(); } );
 
 	// init button for going one step forward
 	step.setIcon(QIcon(":/images/play-to-90.png"));
-	QObject::connect(&step, &QToolButton::clicked, [this]() { GraphicCore::get_instance()->step(); });
+	QObject::connect(&step, &QToolButton::clicked, [this]() { GraphicCore::step(); });
 
 	fullscreen.setIcon(QIcon(":/images/fullscreen-90.png"));
 	QObject::connect(&fullscreen, &QToolButton::clicked, [this]() { emit fullscreen_changed(); });
@@ -184,7 +184,7 @@ void ToolWidget::translate()
 void ToolWidget::update_play_stop_button()
 {
 	// if generating is running, set stop-icon
-	if(GraphicCore::get_instance()->is_running())
+	if(GraphicCore::is_running())
 	{
 		play_stop.setIcon(QIcon(":/images/stop-90.png"));
 		play_stop.setToolTip(tr("Stop (R)"));
@@ -199,26 +199,26 @@ void ToolWidget::update_play_stop_button()
 
 void ToolWidget::update_data()
 {
-	current_avg_speed.setText(tr("Avg. Speed: ") + QString::number(Core::get_instance()->get_avg_speed(), 'g', 4));
-	current_cars.setText(tr("Cars: ") + QString::number(Core::get_instance()->get_car_amount()));
-	current_lanes.setText(tr("Lanes: ") + QString::number(Core::get_instance()->get_lanes()));
-	current_length.setText(tr("Length: ") + QString::number(Core::get_instance()->get_length()));
-	current_time.setText(tr("Time: ") + QString::number(Core::get_instance()->get_time()));
+	current_avg_speed.setText(tr("Avg. Speed: ") + QString::number(Core::get_avg_speed(), 'g', 4));
+	current_cars.setText(tr("Cars: ") + QString::number(Core::get_car_amount()));
+	current_lanes.setText(tr("Lanes: ") + QString::number(Core::get_lanes()));
+	current_length.setText(tr("Length: ") + QString::number(Core::get_length()));
+	current_time.setText(tr("Time: ") + QString::number(Core::get_time()));
 }
 
 void ToolWidget::play_or_stop()
 {
 	// if generating is running, stop it and set play-icon
-	if(GraphicCore::get_instance()->is_running())
+	if(GraphicCore::is_running())
 	{
-		GraphicCore::get_instance()->stop();
+		GraphicCore::stop();
 		play_stop.setIcon(QIcon(":/images/play-90.png"));
 		play_stop.setToolTip(tr("Play (R)"));
 	}
 	// if generation is stopped, start it and set stop-icon
 	else
 	{
-		GraphicCore::get_instance()->start();
+		GraphicCore::start();
 		play_stop.setIcon(QIcon(":/images/stop-90.png"));
 		play_stop.setToolTip(tr("Stop (R)"));
 	}

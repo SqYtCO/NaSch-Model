@@ -18,27 +18,34 @@ StreetWidget::StreetWidget(QWidget* parent) : BASE_CLASS(parent), car_image(":/i
 	this->setPalette(QPalette(Qt::black));
 }
 
+StreetWidget::~StreetWidget()
+{
+	GraphicCore::stop();
+}
+
 void StreetWidget::paintEvent(QPaintEvent*)
 {
+	std::lock_guard<decltype(GraphicCore::get_mutex())> system_lock(GraphicCore::get_mutex());
+
 #ifdef ENABLE_DRAW_TIME_MEASUREMENT
 	auto begin = std::chrono::high_resolution_clock::now();
 #endif
-	car_image = car_image.scaled(GraphicCore::get_instance()->get_config()->get_cell_size(), GraphicCore::get_instance()->get_config()->get_cell_size());
+	car_image = car_image.scaled(GraphicCore::get_config()->get_cell_size(), GraphicCore::get_config()->get_cell_size());
 
 	QPainter painter(this);
 	painter.setPen(Qt::black);
-
 	painter.scale(scale, scale);
 
-	for(std::size_t a = 0, y1 = 0; a < Core::get_instance()->get_lanes(); ++a, y1 += GraphicCore::get_instance()->get_config()->get_cell_size())
+	std::size_t y_center = height() / 2 - Core::get_lanes() * GraphicCore::get_config()->get_cell_size() / 2;
+	for(std::size_t a = 0, y1 = 0; a < Core::get_lanes(); ++a, y1 += GraphicCore::get_config()->get_cell_size())
 	{
-		for(std::size_t b = 0, x = 0, y2 = 0; b < Core::get_instance()->get_length(); ++b, x += GraphicCore::get_instance()->get_config()->get_cell_size())
+		for(std::size_t b = 0, x = 0, y2 = 0; b < Core::get_length(); ++b, x += GraphicCore::get_config()->get_cell_size())
 		{
-			if(GraphicCore::get_instance()->get_config()->get_long_street_break())
+			if(GraphicCore::get_config()->get_long_street_break())
 			{
-				if((x + GraphicCore::get_instance()->get_config()->get_cell_size()) * scale > static_cast<std::size_t>(width()))
+				if((x + GraphicCore::get_config()->get_cell_size()) * scale > static_cast<std::size_t>(width()))
 				{
-					y1 += GraphicCore::get_instance()->get_config()->get_cell_size();
+					y1 += GraphicCore::get_config()->get_cell_size();
 					x = 0;
 				}
 			}
@@ -46,56 +53,56 @@ void StreetWidget::paintEvent(QPaintEvent*)
 			if(b == 0)
 			{
 				painter.setBrush(QBrush(QColor(0xE0, 0xE0, 0xE0), Qt::SolidPattern));
-				painter.drawRect(x + move_x, y1 + y2 + move_y, GraphicCore::get_instance()->get_config()->get_cell_size(), GraphicCore::get_instance()->get_config()->get_cell_size());
+				painter.drawRect(x + move_x, y1 + y2 + move_y + y_center, GraphicCore::get_config()->get_cell_size(), GraphicCore::get_config()->get_cell_size());
 				painter.setBrush(QBrush(Qt::white, Qt::SolidPattern));
 			}
 			else
 			{
 				painter.setBrush(QBrush(Qt::white, Qt::SolidPattern));
-				painter.drawRect(x + move_x, y1 + y2 + move_y, GraphicCore::get_instance()->get_config()->get_cell_size(), GraphicCore::get_instance()->get_config()->get_cell_size());
+				painter.drawRect(x + move_x, y1 + y2 + move_y + y_center, GraphicCore::get_config()->get_cell_size(), GraphicCore::get_config()->get_cell_size());
 			}
 
-			if(Core::get_instance()->is_slow_down_at(b, a))
+			if(Core::is_slow_down_at(b, a))
 			{
 				painter.setBrush(QBrush(Qt::gray, Qt::SolidPattern));
-				painter.drawRect(x + move_x, y1 + y2 + move_y, GraphicCore::get_instance()->get_config()->get_cell_size(), GraphicCore::get_instance()->get_config()->get_cell_size());
+				painter.drawRect(x + move_x, y1 + y2 + move_y + y_center, GraphicCore::get_config()->get_cell_size(), GraphicCore::get_config()->get_cell_size());
 				painter.setBrush(QBrush(Qt::white, Qt::SolidPattern));
 			}
 
-			if(Core::get_instance()->is_car_at(b, a))
+			if(Core::is_car_at(b, a))
 			{
-				if(GraphicCore::get_instance()->get_config()->get_show_cars())
+				if(GraphicCore::get_config()->get_show_cars())
 				{
 					QPixmap temp(car_image.size());
-					if(GraphicCore::get_instance()->get_config()->get_show_speed_color())
-						temp.fill(QColor(0xFF * (static_cast<double>(Core::get_instance()->get_speed(b, a)) / Core::get_instance()->get_max_speed()),
-										 (Core::get_instance()->get_speed(b, a) / Core::get_instance()->get_max_speed()) ? 0x8C : 0x00, 0x00));
+					if(GraphicCore::get_config()->get_show_speed_color())
+						temp.fill(QColor(0xFF * (static_cast<double>(Core::get_speed(b, a)) / Core::get_max_speed()),
+										 (Core::get_speed(b, a) / Core::get_max_speed()) ? 0x8C : 0x00, 0x00));
 					else
-						temp.fill(car_colors[Core::get_instance()->get_id(b, a) % 11]);
+						temp.fill(car_colors[Core::get_id(b, a) % 11]);
 
 					temp.setMask(car_image.createMaskFromColor(Qt::transparent));
 					car_image = temp;
-					painter.drawPixmap(x + move_x, y1 + y2 + move_y, car_image);
-					painter.drawText(QRectF(x + GraphicCore::get_instance()->get_config()->get_cell_size() * 0.7  + move_x,
-											y1 + y2 + GraphicCore::get_instance()->get_config()->get_cell_size() * 0.1 + move_y,
-											GraphicCore::get_instance()->get_config()->get_cell_size() * 0.2, GraphicCore::get_instance()->get_config()->get_cell_size() * 0.3),
-									QString::number(Core::get_instance()->get_speed(b, a)));
+					painter.drawPixmap(x + move_x, y1 + y2 + move_y + y_center, car_image);
+					painter.drawText(QRectF(x + GraphicCore::get_config()->get_cell_size() * 0.7  + move_x,
+											y1 + y2 + GraphicCore::get_config()->get_cell_size() * 0.1 + move_y + y_center,
+											GraphicCore::get_config()->get_cell_size() * 0.2, GraphicCore::get_config()->get_cell_size() * 0.3),
+									QString::number(Core::get_speed(b, a)));
 				}
 				else
 				{
-					if(GraphicCore::get_instance()->get_config()->get_show_speed_color())
-						painter.setBrush(QBrush(QColor(0xFF * (static_cast<double>(Core::get_instance()->get_speed(b, a)) / Core::get_instance()->get_max_speed()),
-														(Core::get_instance()->get_speed(b, a) / Core::get_instance()->get_max_speed()) ? 0x8C : 0x00, 0x00), Qt::SolidPattern));
+					if(GraphicCore::get_config()->get_show_speed_color())
+						painter.setBrush(QBrush(QColor(0xFF * (static_cast<double>(Core::get_speed(b, a)) / Core::get_max_speed()),
+														(Core::get_speed(b, a) / Core::get_max_speed()) ? 0x8C : 0x00, 0x00), Qt::SolidPattern));
 					else
-						painter.setBrush(QBrush(car_colors[Core::get_instance()->get_id(b, a) % 11], Qt::SolidPattern));
+						painter.setBrush(QBrush(car_colors[Core::get_id(b, a) % 11], Qt::SolidPattern));
 
-					painter.drawRect(x + move_x, y1 + y2 + move_y, GraphicCore::get_instance()->get_config()->get_cell_size(), GraphicCore::get_instance()->get_config()->get_cell_size());
+					painter.drawRect(x + move_x, y1 + y2 + move_y + y_center, GraphicCore::get_config()->get_cell_size(), GraphicCore::get_config()->get_cell_size());
 				}
 			}
-			else if(Core::get_instance()->is_barrier_at(b, a))
+			else if(Core::is_barrier_at(b, a))
 			{
 				painter.setBrush(QBrush(Qt::black, Qt::SolidPattern));
-				painter.drawRect(x + move_x, y1 + y2 + move_y, GraphicCore::get_instance()->get_config()->get_cell_size(), GraphicCore::get_instance()->get_config()->get_cell_size());
+				painter.drawRect(x + move_x, y1 + y2 + move_y + y_center, GraphicCore::get_config()->get_cell_size(), GraphicCore::get_config()->get_cell_size());
 
 				painter.setBrush(QBrush(Qt::white, Qt::SolidPattern));
 			}
@@ -111,15 +118,15 @@ void StreetWidget::paintEvent(QPaintEvent*)
 void StreetWidget::keyPressEvent(QKeyEvent* event)
 {
 	if(event->key() == Qt::Key_Space)
-		GraphicCore::get_instance()->step();
+		GraphicCore::step();
 	else if(event->key() == Qt::Key_N)
-		GraphicCore::get_instance()->new_game();
+		GraphicCore::new_game();
 	else if(event->key() == Qt::Key_R)
 	{
-		if(GraphicCore::get_instance()->is_running())
-			GraphicCore::get_instance()->stop();
+		if(GraphicCore::is_running())
+			GraphicCore::stop();
 		else
-			GraphicCore::get_instance()->start();
+			GraphicCore::start();
 	}
 	else if(event->key() == Qt::Key_Up)
 	{
@@ -169,52 +176,53 @@ void StreetWidget::wheelEvent(QWheelEvent* event)
 
 void StreetWidget::mousePressEvent(QMouseEvent* event)
 {
-	double cell_size = GraphicCore::get_instance()->get_config()->get_cell_size() * scale;
+	double cell_size = GraphicCore::get_config()->get_cell_size() * scale;
 
 	// avoid rounding errors
 	if((static_cast<double>((event->x() - (move_x * scale))) / cell_size < 0) || (static_cast<double>((event->y() - (move_y * scale))) / cell_size < 0))
 		return;
 
+	std::size_t y_center = height() / 2 - Core::get_lanes() * GraphicCore::get_config()->get_cell_size() / 2;
 	std::size_t pos = (event->x() - (move_x * scale)) / cell_size;
-	std::size_t lane = (event->y() - (move_y * scale)) / cell_size;
-	if(GraphicCore::get_instance()->get_config()->get_long_street_break())
+	std::size_t lane = (event->y() - ((move_y * scale) + y_center)) / cell_size;
+	if(GraphicCore::get_config()->get_long_street_break())
 	{
-		std::size_t breaks = Core::get_instance()->get_length() + 1;
+		std::size_t breaks = Core::get_length() + 1;
 		while(breaks * cell_size > width())
 			--breaks;
 
 		pos += lane * breaks;
-		lane /= std::ceil(static_cast<double>(Core::get_instance()->get_length()) / breaks);
+		lane /= std::ceil(static_cast<double>(Core::get_length()) / breaks);
 	}
 
-	if(pos > Core::get_instance()->get_length() || lane > Core::get_instance()->get_lanes())
+	if(pos > Core::get_length() || lane > Core::get_lanes())
 		return;
 
-	if(GraphicCore::get_instance()->get_run_config()->get_tool() == Tool::Car_Tool)
+	if(GraphicCore::get_run_config()->get_tool() == Tool::Car_Tool)
 	{
-		if(Core::get_instance()->is_car_at(pos, lane))
-			Core::get_instance()->remove_car(pos, lane);
+		if(Core::is_car_at(pos, lane))
+			Core::remove_car(pos, lane);
 		else
-		//	Core::get_instance()->add_car(Core::get_instance()->get_max_speed(), pos, lane);
-			Core::get_instance()->add_car(0, pos, lane);
+		//	Core::add_car(Core::get_max_speed(), pos, lane);
+			Core::add_car(0, pos, lane);
 	}
-	else if(GraphicCore::get_instance()->get_run_config()->get_tool() == Tool::Slow_Down_Tool)
+	else if(GraphicCore::get_run_config()->get_tool() == Tool::Slow_Down_Tool)
 	{
-		if(Core::get_instance()->is_slow_down_at(pos, lane))
-			Core::get_instance()->remove_slow_down(pos, lane);
+		if(Core::is_slow_down_at(pos, lane))
+			Core::remove_slow_down(pos, lane);
 		else
-			Core::get_instance()->add_slow_down(pos, lane);
+			Core::add_slow_down(pos, lane);
 	}
-	else if(GraphicCore::get_instance()->get_run_config()->get_tool() == Tool::Barrier_Tool)
+	else if(GraphicCore::get_run_config()->get_tool() == Tool::Barrier_Tool)
 	{
-		if(Core::get_instance()->is_barrier_at(pos, lane))
-			Core::get_instance()->remove_barrier(pos, lane);
+		if(Core::is_barrier_at(pos, lane))
+			Core::remove_barrier(pos, lane);
 		else
-			Core::get_instance()->add_barrier(pos, lane);
+			Core::add_barrier(pos, lane);
 	}
-	else if(GraphicCore::get_instance()->get_run_config()->get_tool() == Tool::Speed_Tool)
+	else if(GraphicCore::get_run_config()->get_tool() == Tool::Speed_Tool)
 	{
-		Core::get_instance()->set_car_speed((Core::get_instance()->get_speed(pos, lane) + 1) % (Core::get_instance()->get_max_speed() + 1), pos, lane);
+		Core::set_car_speed((Core::get_speed(pos, lane) + 1) % (Core::get_max_speed() + 1), pos, lane);
 	}
 
 	update();

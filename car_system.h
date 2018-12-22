@@ -28,6 +28,7 @@ class Car_System
 	void calculate();
 
 public:
+	Car_System();
 	Car_System(std::size_t length, std::size_t lanes, std::size_t car_density, std::size_t max_speed, std::size_t slow_down_chance);
 
 	void generate();
@@ -45,7 +46,8 @@ public:
 	void add_slow_down(std::size_t pos, std::size_t lane = 0);
 	void remove_slow_down(std::size_t pos, std::size_t lane = 0);
 
-	double get_avg_speed();
+	// default argument selects all lanes
+	double get_avg_speed(std::size_t lane = std::numeric_limits<std::size_t>::max());
 	std::size_t get_car_amount();
 
 	std::size_t get_speed(std::size_t pos, std::size_t lane = 0);

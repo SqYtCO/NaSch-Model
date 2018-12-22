@@ -10,51 +10,45 @@
 #include <QString>
 #include <thread>
 #include <atomic>
+#include <memory>
 
 class GraphicCore
 {
-	GraphicConfiguration config;
-	Running_Configuration run_config;
-	QWidget parent;
-	StreetWidget* street;
-#ifdef CREATE_CHARTS
-	ChartWidget* chart;
-#endif
+	static GraphicConfiguration config;
+	static Running_Configuration run_config;
+	static StreetWidget* street;
+	static ChartWidget* chart;
 
-	std::thread* run_thread;
-	std::atomic_bool stop_thread;
-	bool block_thread;
-	void run();
+	static std::mutex sync_mutex;
+	static std::unique_ptr<std::thread> run_thread;
+	static std::atomic_bool stop_thread;
+	static bool block_thread;
 
-	// private constructors and assignment operator
-	GraphicCore();
-	GraphicCore(const GraphicCore&);
-	GraphicCore& operator=(const GraphicCore&);
+	static void add_chart_point();
 
 public:
-	static GraphicCore* get_instance();
-	~GraphicCore();
+	static void init();
+	// no ownership transfer
+	static void init_gui(StreetWidget* street, ChartWidget* chart = nullptr);
 
-	void new_game();
-	void reset();
-	void start();
-	void stop();
-	void step();
+	static void new_game();
+	static void reset();
+	static void start();
+	static void stop();
+	static void step();
+	static std::mutex& get_mutex() { return sync_mutex; }
 
-	void reset_position() { street->reset_position(); street->update(); }
-	void update() { street->update_data(); street->update(); }
+	static void reset_position() { street->reset_position(); street->update(); }
+	static void update() { street->update_data(); street->update(); }
 
-	bool is_running() { return run_thread; }
+	static bool is_running() { return run_thread.get(); }
 
-	bool load(const QString& file);
-	bool save(const QString& file = QString());
+	static bool load(const QString& file);
+	static bool save(const QString& file = QString());
 
-	GraphicConfiguration* get_config() { return &config; }
-	Running_Configuration* get_run_config() { return &run_config; }
-	StreetWidget* get_street() { return street; }
-#ifdef CREATE_CHARTS
-	ChartWidget* get_chart() { return chart; }
-#endif
+	static GraphicConfiguration* get_config() { return &config; }
+	static Running_Configuration* get_run_config() { return &run_config; }
+	static StreetWidget* get_street() { return street; }
 };
 
 #endif // GRAPHICCORE_H

@@ -8,6 +8,7 @@
 #include "toolwidget.h"
 #include "helpwidget.h"
 #include "infowidget.h"
+#include "chartwidget.h"
 #include <QMainWindow>
 #include <QGridLayout>
 #include <QPropertyAnimation>
@@ -23,13 +24,16 @@ class MainWindow : public QMainWindow
 
 	enum View
 	{
-		Street_View = 1,			// 0b00001
-		Tool_View = 2,				// 0b00010
-		Preferences_View = 4,		// 0b00100
-		Help_View = 8,				// 0b01000
-		Info_View = 16				// 0b10000
+		Street_View = 1,			// 0b000001
+		Tool_View = 2,				// 0b000010
+		Preferences_View = 4,		// 0b000100
+		Help_View = 8,				// 0b001000
+		Info_View = 16,				// 0b010000
+		Chart_View = 32				// 0b100000
 	};
+
 	std::size_t current_view;						// contains currently active view; active views are stored as bitmask
+	StreetWidget street_view;
 	PreferencesWidget preferences_view;				// preferences; sliding in on the right side; shortcut: 'P'
 	QPropertyAnimation preferences_animation;		// move-animation of preferences_view
 	ToolWidget tool_view;							// tools; sliding in on the upper side; shortcut: 'T'
@@ -38,6 +42,8 @@ class MainWindow : public QMainWindow
 	QPropertyAnimation help_animation;				// move-animation of help_view
 	InfoWidget info_view;
 	QPropertyAnimation info_animation;
+	ChartWidget chart_view;
+	QPropertyAnimation chart_animation;
 
 	const std::size_t ANIMATION_TIME = 1000;		// time for animations in ms
 	void show_Street_View();							// hide preferences_view and help_view
@@ -62,7 +68,7 @@ class MainWindow : public QMainWindow
 public:
 	// ctor: open start_file and init all views and animations; connect all signals translate to set language
 	MainWindow(const char* start_file = nullptr, QWidget* parent = nullptr);
-	virtual ~MainWindow() = default;
+	virtual ~MainWindow() override = default;
 
 	// show maximized or in fullscreen in dependence of the set preferences; display also StartupDialog
 	void show();

@@ -49,11 +49,11 @@ void InfoWidget::translate()
 
 void InfoWidget::update_data()
 {
-	avg_speed.setText(tr("Avg. Speed: ") + QString::number(Core::get_instance()->get_avg_speed(), 'g', 4));
-	cars.setText(tr("Cars: ") + QString::number(Core::get_instance()->get_car_amount()));
-	lanes.setText(tr("Lanes: ") + QString::number(Core::get_instance()->get_lanes()));
-	length.setText(tr("Length: ") + QString::number(Core::get_instance()->get_length()));
-	time.setText(tr("Time: ") + QString::number(Core::get_instance()->get_time()));
+	avg_speed.setText(tr("Avg. Speed: ") + QString::number(Core::get_avg_speed(), 'g', 4));
+	cars.setText(tr("Cars: ") + QString::number(Core::get_car_amount()));
+	lanes.setText(tr("Lanes: ") + QString::number(Core::get_lanes()));
+	length.setText(tr("Length: ") + QString::number(Core::get_length()));
+	time.setText(tr("Time: ") + QString::number(Core::get_time()));
 }
 
 void InfoWidget::enable_focus()
