@@ -39,10 +39,12 @@ SOURCES += \
 	graphicconfiguration.cpp \
 	startupdialog.cpp \
 	infowidget.cpp \
-	chartwidget.cpp
+	chartwidget.cpp \
+    caritem.cpp
 
 HEADERS += \
         mainwindow.h \
+	car.h \
 	car_system.h \
 	configuration.h \
 	streetwidget.h \
@@ -55,7 +57,8 @@ HEADERS += \
 	graphicconfiguration.h \
 	startupdialog.h \
 	infowidget.h \
-	chartwidget.h
+	chartwidget.h \
+    caritem.h
 
 RESOURCES += \
 	resources.qrc
