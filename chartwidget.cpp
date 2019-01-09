@@ -66,7 +66,7 @@ void SlowDownChart::add_data(std::size_t slow_down_chance, double avg_speed, std
 		this->axisX()->setRange(0, 5);
 	static_cast<QValueAxis*>(this->axisX())->setLabelFormat("%d");
 	static_cast<QValueAxis*>(this->axisX())->applyNiceNumbers();
-	static_cast<QValueAxis*>(this->axisX())->setTickCount(6);
+//	static_cast<QValueAxis*>(this->axisX())->setTickCount(6);
 
 	this->axisY()->setRange(0, static_cast<int>(Core::get_max_speed()));
 	static_cast<QValueAxis*>(this->axisY())->setTickCount(Core::get_max_speed() + 1);

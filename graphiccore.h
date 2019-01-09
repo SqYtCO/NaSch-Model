@@ -7,7 +7,6 @@
 #ifdef CREATE_CHARTS
 #include "chartwidget.h"
 #endif
-#include <QString>
 #include <thread>
 #include <atomic>
 #include <memory>
@@ -43,12 +42,11 @@ public:
 
 	static bool is_running() { return run_thread.get(); }
 
-	static bool load(const QString& file);
-	static bool save(const QString& file = QString());
+	static bool load(const std::string& file);
+	static bool save(const std::string& file = std::string());
 
 	static GraphicConfiguration* get_config() { return &config; }
 	static Running_Configuration* get_run_config() { return &run_config; }
-	static StreetWidget* get_street() { return street; }
 };
 
 #endif // GRAPHICCORE_H

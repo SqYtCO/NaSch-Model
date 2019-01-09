@@ -12,11 +12,6 @@ class Core
 	static Car_System system;
 	static std::size_t time;
 
-	// private constructors and assignment operator
-	Core();
-	Core(const Core&) = delete;
-	Core& operator=(const Core&) = delete;
-
 public:
 	static bool save(const std::string& file = std::string());
 	static bool load(const std::string& file);
@@ -47,7 +42,6 @@ public:
 	static bool is_slow_down_at(std::size_t pos, std::size_t lane = 0) { return system.is_slow_down_at(pos, lane); }
 	static bool is_barrier_at(std::size_t pos, std::size_t lane = 0) { return system.is_barrier_at(pos, lane); }
 	static std::size_t get_speed(std::size_t pos, std::size_t lane = 0) { return system.get_speed(pos, lane); }
-	static std::size_t get_id(std::size_t pos, std::size_t lane = 0) { return system.get_id(pos, lane); }
 
 	static std::size_t get_length() { return system.get_length(); }
 	static std::size_t get_lanes() { return system.get_lanes(); }

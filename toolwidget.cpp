@@ -90,16 +90,24 @@ void ToolWidget::init_control_buttons()
 	QObject::connect(&help, &QToolButton::clicked, [this]() { emit show_help(); });
 
 	// connect quit button
-	QObject::connect(&quit, &QToolButton::clicked, []() { qApp->closeAllWindows(); });
+	QObject::connect(&quit, &QToolButton::clicked, []() { qApp->quit(); });
 }
 
 void ToolWidget::init_tool_buttons()
 {
-	car_tool.setDown(true);
-	QObject::connect(&car_tool, &QToolButton::clicked, [this]() { GraphicCore::get_run_config()->set_tool(Car_Tool); });
-	QObject::connect(&speed_tool, &QToolButton::clicked, [this]() { GraphicCore::get_run_config()->set_tool(Speed_Tool); });
-	QObject::connect(&barrier_tool, &QToolButton::clicked, [this]() { GraphicCore::get_run_config()->set_tool(Barrier_Tool); });
-	QObject::connect(&slow_down_tool, &QToolButton::clicked, [this]() { GraphicCore::get_run_config()->set_tool(Slow_Down_Tool); });
+	car_tool.setIcon(QIcon(":/images/car-white-200.png"));
+	auto set_down_tool_buttons = [this](Tool tool)
+	{
+		car_tool.setDown(tool == Car_Tool);
+		speed_tool.setDown(tool == Speed_Tool);
+		barrier_tool.setDown(tool == Barrier_Tool);
+		slow_down_tool.setDown(tool == Slow_Down_Tool);
+	};
+	QObject::connect(&car_tool, &QToolButton::clicked, [set_down_tool_buttons]() { GraphicCore::get_run_config()->set_tool(Car_Tool); set_down_tool_buttons(Car_Tool); });
+	speed_tool.setIcon(QIcon(":/images/arrow-up-200.png"));
+	QObject::connect(&speed_tool, &QToolButton::clicked, [set_down_tool_buttons]() { GraphicCore::get_run_config()->set_tool(Speed_Tool); set_down_tool_buttons(Speed_Tool); });
+	QObject::connect(&barrier_tool, &QToolButton::clicked, [set_down_tool_buttons]() { GraphicCore::get_run_config()->set_tool(Barrier_Tool); set_down_tool_buttons(Barrier_Tool); });
+	QObject::connect(&slow_down_tool, &QToolButton::clicked, [set_down_tool_buttons]() { GraphicCore::get_run_config()->set_tool(Slow_Down_Tool); set_down_tool_buttons(Slow_Down_Tool); });
 }
 
 void ToolWidget::init_buttons()
@@ -112,7 +120,7 @@ void ToolWidget::init_buttons()
 	{
 		QString file = QFileDialog::getOpenFileName();
 		if(!file.isEmpty())
-			GraphicCore::load(file);
+			GraphicCore::load(file.toStdString());
 	});
 
 	// init new button
@@ -134,7 +142,7 @@ void ToolWidget::init_buttons()
 
 	// init button for going one step forward
 	step.setIcon(QIcon(":/images/play-to-90.png"));
-	QObject::connect(&step, &QToolButton::clicked, [this]() { GraphicCore::step(); });
+	QObject::connect(&step, &QToolButton::clicked, []() { GraphicCore::step(); });
 
 	fullscreen.setIcon(QIcon(":/images/fullscreen-90.png"));
 	QObject::connect(&fullscreen, &QToolButton::clicked, [this]() { emit fullscreen_changed(); });

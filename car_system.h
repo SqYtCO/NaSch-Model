@@ -8,19 +8,16 @@
 class Car_System
 {
 	std::vector<std::size_t> system;
-	std::size_t car_id;
 	std::size_t length;
 	std::size_t lanes;
 	std::size_t car_density;
 	std::size_t max_speed;
 	std::size_t slow_down_chance;
+	bool multiple_lanes;
 
-	static constexpr const std::size_t SLOW_DOWN_BIT = (1ul << 63);
+	static constexpr const std::size_t SLOW_DOWN_BIT = (1ul << (sizeof(std::size_t) * 8 - 1));
 	static constexpr const std::size_t EMPTY = (std::numeric_limits<std::size_t>::max() & ~SLOW_DOWN_BIT);
 	static constexpr const std::size_t BARRIER = (EMPTY - 1);
-
-	inline bool is_empty(std::size_t num) const { clear_slow_down_bit(num); return num == EMPTY; }
-	inline std::size_t set_empty(std::size_t num) const { return num | EMPTY; }
 
 	inline std::size_t set_slow_down_bit(std::size_t num) const { return num | SLOW_DOWN_BIT; }
 	inline std::size_t clear_slow_down_bit(std::size_t num) const { return num & ~SLOW_DOWN_BIT; }
@@ -28,8 +25,7 @@ class Car_System
 	void calculate();
 
 public:
-	Car_System();
-	Car_System(std::size_t length, std::size_t lanes, std::size_t car_density, std::size_t max_speed, std::size_t slow_down_chance);
+	Car_System(std::size_t length = 0, std::size_t lanes = 0, std::size_t car_density = 0, std::size_t max_speed = 0, std::size_t slow_down_chance = 0);
 
 	void generate();
 	void create(std::size_t length, std::size_t lanes, std::size_t car_density, std::size_t max_speed, std::size_t slow_down_chance);
@@ -51,7 +47,6 @@ public:
 	std::size_t get_car_amount();
 
 	std::size_t get_speed(std::size_t pos, std::size_t lane = 0);
-	long get_id(std::size_t pos, std::size_t lane = 0);
 	bool is_car_at(std::size_t pos, std::size_t lane = 0);
 	bool is_slow_down_at(std::size_t pos, std::size_t lane = 0);
 	bool is_barrier_at(std::size_t pos, std::size_t lane = 0);

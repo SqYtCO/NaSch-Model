@@ -114,7 +114,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 	{
 		QString file = QFileDialog::getOpenFileName();
 		if(!file.isEmpty())
-			GraphicCore::load(file);
+			GraphicCore::load(file.toStdString());
 	}
 	// save only if neither preferences nor help view are active
 	else if(event->key() == Qt::Key_S && !(current_view & (Preferences_View | Help_View)))
@@ -123,7 +123,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 		{
 			QString file = QFileDialog::getSaveFileName();
 			if(!file.isEmpty())
-				GraphicCore::save(file);
+				GraphicCore::save(file.toStdString());
 		}
 		else
 			GraphicCore::save();

@@ -52,11 +52,12 @@ void GraphicCore::start()
 		{
 			while(!stop_thread)
 			{
-				sync_mutex.lock();
-				Core::step();
-				sync_mutex.unlock();
+				{
+					std::lock_guard<std::mutex> lock(sync_mutex);
+					Core::step();
+				}
 				street->update_data();
-				street->update();
+				emit street->start_update();
 				std::this_thread::sleep_for(std::chrono::milliseconds(config.get_delay()));
 			}
 		}));
@@ -116,16 +117,16 @@ void GraphicCore::add_chart_point()
 	}
 }
 
-bool GraphicCore::load(const QString& file)
+bool GraphicCore::load(const std::string& file)
 {
-	if(file == "hi")
+	if(file == "")
 		;
 	return false;
 }
 
-bool GraphicCore::save(const QString& file)
+bool GraphicCore::save(const std::string& file)
 {
-	if(file == "hi")
+	if(file == "")
 		;
 	return false;
 }
