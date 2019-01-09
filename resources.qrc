@@ -16,5 +16,7 @@
         <file>info/en_welcome.html</file>
         <file>translations/nasch_de.qm</file>
         <file>translations/qtbase_de.qm</file>
+        <file>images/car-white-200.png</file>
+        <file>images/arrow-up-200.png</file>
     </qresource>
 </RCC>
