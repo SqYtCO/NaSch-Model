@@ -106,8 +106,10 @@ void GraphicCore::add_chart_point()
 		{
 			for(std::size_t pos = 0; pos < Core::get_length(); ++pos)
 			{
-				long speed = Core::get_speed(pos, lane);
-				if(speed < 0 || speed > Core::get_max_speed())
+				if(!Core::is_car_at(pos, lane))
+					continue;
+				std::size_t speed = Core::get_speed(pos, lane);
+				if(speed > Core::get_max_speed())
 					continue;
 
 				++speeds[speed];
