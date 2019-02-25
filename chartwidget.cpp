@@ -80,27 +80,30 @@ SpeedChart::SpeedChart() : speed_bar_set("")
 void SpeedChart::add_data(const std::vector<std::size_t>& amount_of_car_at_speed)
 {
 	speed_bar_set.remove(0, speed_bar_set.count());
+	speed_bar_set.setLabelColor(QColor(Qt::transparent));
+
 /*	if(speed_axis.count() != Core::get_max_speed())
 	{
 		this->removeAxis(&speed_axis);
 		speed_axis.clear();
 	}*/
 
-	for(auto it = amount_of_car_at_speed.begin(); it != amount_of_car_at_speed.end(); ++it)
-		speed_bar_set.append(*it);
+	for(std::size_t i = 0; i < amount_of_car_at_speed.size(); ++i)
+		speed_bar_set.insert(i, amount_of_car_at_speed[i]);
+		//speed_bar_set.append();
 
 	speed_series.append(&speed_bar_set);
 
 	if(!this->series().contains(&speed_series))
 		this->addSeries(&speed_series);
 
-	this->createDefaultAxes();
 //	if(speed_axis.count() != Core::get_max_speed())
 //		this->setAxisX(&speed_axis, &speed_series);
-	this->axisX()->setRange(0, static_cast<int>(Core::get_max_speed()));
-	this->axisY()->setRange(0, static_cast<int>(Core::get_car_amount()));
 
+	this->createDefaultAxes();
 	static_cast<QValueAxis*>(this->axisY())->setLabelFormat("%d");
+	this->axisX()->setRange(0, static_cast<int>(Core::get_max_speed() + 1));
+	this->axisY()->setRange(0, static_cast<int>(Core::get_car_amount()));
 }
 
 #endif
