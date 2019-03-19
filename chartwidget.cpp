@@ -60,16 +60,18 @@ void SlowDownChart::add_data(std::size_t slow_down_chance, double avg_speed, std
 	line->append(time, avg_speed);
 
 	this->createDefaultAxes();
-	if(time >= static_cast<QValueAxis*>(this->axisX())->max())
-		this->axisX()->setRange(0, std::ceil(time / 5.) * 5);
-	else if(static_cast<QValueAxis*>(this->axisX())->max() < 5)
-		this->axisX()->setRange(0, 5);
-	static_cast<QValueAxis*>(this->axisX())->setLabelFormat("%d");
-	static_cast<QValueAxis*>(this->axisX())->applyNiceNumbers();
+	QValueAxis* axis_x = static_cast<QValueAxis*>(this->axes(Qt::Horizontal).back());
+	if(time >= axis_x->max())
+		axis_x->setRange(0, std::ceil(time / 5.) * 5);
+	else if(static_cast<QValueAxis*>(axis_x)->max() < 5)
+		axis_x->setRange(0, 5);
+	axis_x->setLabelFormat("%d");
+	axis_x->applyNiceNumbers();
 //	static_cast<QValueAxis*>(this->axisX())->setTickCount(6);
 
-	this->axisY()->setRange(0, static_cast<int>(Core::get_max_speed()));
-	static_cast<QValueAxis*>(this->axisY())->setTickCount(Core::get_max_speed() + 1);
+	QValueAxis* axis_y = static_cast<QValueAxis*>(this->axes(Qt::Vertical).back());
+	axis_y->setRange(0, static_cast<int>(Core::get_max_speed()));
+	axis_y->setTickCount(static_cast<int>(Core::get_max_speed() + 1));
 }
 
 SpeedChart::SpeedChart() : speed_bar_set("")
@@ -89,7 +91,7 @@ void SpeedChart::add_data(const std::vector<std::size_t>& amount_of_car_at_speed
 	}*/
 
 	for(std::size_t i = 0; i < amount_of_car_at_speed.size(); ++i)
-		speed_bar_set.insert(i, amount_of_car_at_speed[i]);
+		speed_bar_set.insert(static_cast<int>(i), amount_of_car_at_speed[i]);
 		//speed_bar_set.append();
 
 	speed_series.append(&speed_bar_set);
@@ -101,9 +103,11 @@ void SpeedChart::add_data(const std::vector<std::size_t>& amount_of_car_at_speed
 //		this->setAxisX(&speed_axis, &speed_series);
 
 	this->createDefaultAxes();
-	static_cast<QValueAxis*>(this->axisY())->setLabelFormat("%d");
-	this->axisX()->setRange(0, static_cast<int>(Core::get_max_speed() + 1));
-	this->axisY()->setRange(0, static_cast<int>(Core::get_car_amount()));
+	QAbstractAxis* axis_x = this->axes(Qt::Horizontal).back();
+	QValueAxis* axis_y = static_cast<QValueAxis*>(this->axes(Qt::Vertical).back());
+	axis_y->setLabelFormat("%d");
+	axis_x->setRange(0, static_cast<int>(Core::get_max_speed() + 1));
+	axis_x->setRange(0, static_cast<int>(Core::get_car_amount()));
 }
 
 #endif
