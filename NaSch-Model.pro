@@ -1,9 +1,3 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2018-06-04T17:08:02
-#
-#-------------------------------------------------
-
 QT += core gui widgets
 
 # measure time of calculation while autogenerating in microseconds and output the result on the console
@@ -11,7 +5,7 @@ DEFINES += ENABLE_CALC_TIME_MEASUREMENT
 # measure time of drawing cells in microseconds and output the result on the console
 DEFINES += ENABLE_DRAW_TIME_MEASUREMENT
 
-# enable some charts
+# enable charts
 DEFINES += CREATE_CHARTS
 
 contains(DEFINES, CREATE_CHARTS): QT += charts
@@ -40,7 +34,7 @@ SOURCES += \
 	startupdialog.cpp \
 	infowidget.cpp \
 	chartwidget.cpp \
-    caritem.cpp
+	caritem.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -57,13 +51,10 @@ HEADERS += \
 	startupdialog.h \
 	infowidget.h \
 	chartwidget.h \
-    caritem.h
+	caritem.h
 
 RESOURCES += \
 	resources.qrc
-
-DISTFILES += \
-	cut-off
 
 TRANSLATIONS += \
 	nasch_de.ts
